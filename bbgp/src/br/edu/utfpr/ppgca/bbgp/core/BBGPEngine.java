@@ -16,4 +16,9 @@ public class BBGPEngine extends AbstractGoalProcessingEngine {
 		return executiveGoals;
 	}
 
+	@Override
+	public String getDescriptor() {
+		return "BBGP";
+	}
+
 }

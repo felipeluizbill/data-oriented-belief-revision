@@ -10,9 +10,19 @@ public class Parameters {
 	private Float storeThreshold = 0F;
 	private Float retrieveThreshold = 0F;
 	private Float oblivionThreshold = 0F;
-	private Integer memorySize = 1000;
 
 	private AbstractRelevanceModel relevanceModel = new DefaultRelevanceModel();
+
+	public Parameters() {
+
+	}
+
+	public Parameters(Float storeThreshold, Float retrieveThreshold, Float oblivionThreshold) {
+		super();
+		this.storeThreshold = storeThreshold;
+		this.retrieveThreshold = retrieveThreshold;
+		this.oblivionThreshold = oblivionThreshold;
+	}
 
 	public Float getFocusThreshold() {
 		return focusThreshold;
@@ -52,14 +62,6 @@ public class Parameters {
 
 	public void setOblivionThreshold(Float oblivionThreshold) {
 		this.oblivionThreshold = oblivionThreshold;
-	}
-
-	public Integer getMemorySize() {
-		return memorySize;
-	}
-
-	public void setMemorySize(Integer memorySize) {
-		this.memorySize = memorySize;
 	}
 
 	public AbstractRelevanceModel getRelevanceModel() {

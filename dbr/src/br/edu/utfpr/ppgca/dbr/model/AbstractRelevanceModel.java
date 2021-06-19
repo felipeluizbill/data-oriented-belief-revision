@@ -6,7 +6,6 @@ import br.edu.utfpr.ppgca.prs.core.Clock;
 import br.edu.utfpr.ppgca.prs.entities.Belief;
 import br.edu.utfpr.ppgca.prs.entities.Data;
 import br.edu.utfpr.ppgca.prs.entities.Goal;
-import br.edu.utfpr.ppgca.prs.entities.GoalStatus;
 
 public abstract class AbstractRelevanceModel {
 
@@ -28,6 +27,10 @@ public abstract class AbstractRelevanceModel {
 			relevanceValue += goal.utility;
 		}
 		return relevanceValue;
+	}
+
+	public String getDescriptor() {
+		return this.getClass().getSimpleName();
 	}
 
 }

@@ -26,7 +26,7 @@ public class Monitor {
 		log.cycles = agentRef.engine.getCounter();
 		log.utilitySum = agentRef.agenda.getUtilitySum();
 		log.plansRemaining = agentRef.planLibrary.goals.size();
-		System.out.println(log);
+		System.out.println(agentRef.getDescriptor() + log);
 		logs.add(log);
 	}
 

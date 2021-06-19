@@ -19,4 +19,9 @@ public class BDIEngine extends AbstractGoalProcessingEngine {
 		return executiveGoals;
 	}
 
+	@Override
+	public String getDescriptor() {
+		return "BDI";
+	}
+
 }
