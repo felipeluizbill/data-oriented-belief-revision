@@ -21,6 +21,8 @@ public abstract class AbstractBeliefBase {
 
 	public abstract Collection<Belief> getBeliefs();
 
+	public abstract String getDescriptor();
+
 	public Long getOperations() {
 		return this.operations;
 	}

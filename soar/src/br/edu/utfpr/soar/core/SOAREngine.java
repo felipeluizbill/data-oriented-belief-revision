@@ -22,4 +22,9 @@ public class SOAREngine extends AbstractGoalProcessingEngine {
 		return executiveGoals;
 	}
 
+	@Override
+	public String getDescriptor() {
+		return "SOAR";
+	}
+
 }

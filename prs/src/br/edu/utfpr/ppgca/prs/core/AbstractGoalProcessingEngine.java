@@ -22,6 +22,8 @@ public abstract class AbstractGoalProcessingEngine {
 		this.agentRef = agentRef;
 	}
 
+	public abstract String getDescriptor();
+
 	public void run(final Collection<Goal> relevantPlans) {
 		Collection<Goal> executiveGoals = process(relevantPlans);
 		agentRef.getAgenda().addIntention(executiveGoals);

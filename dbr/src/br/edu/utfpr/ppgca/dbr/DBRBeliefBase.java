@@ -28,6 +28,10 @@ public class DBRBeliefBase extends AbstractBeliefBase {
 		this.parameters = parameters;
 	}
 
+	public Parameters getParameters() {
+		return this.parameters;
+	}
+
 	public void beliefUpdate(final Data DATA) {
 		dataLayer.informationUpdate(new DBRData(DATA));
 		Credibility.update(dataLayer);
@@ -41,7 +45,7 @@ public class DBRBeliefBase extends AbstractBeliefBase {
 	}
 
 	public void beliefRevision() {
-		if (this.beliefLayer.active.size() < parameters.getMemorySize()) {
+		if (this.beliefLayer.active.size() < 100) {
 			return;
 		}
 
@@ -70,6 +74,17 @@ public class DBRBeliefBase extends AbstractBeliefBase {
 		HashSet<Belief> beliefs = new HashSet<>();
 		this.beliefLayer.active.forEach(b -> beliefs.add(b));
 		return beliefs;
+	}
+
+	public String getDescriptor() {
+		String descriptor = parameters.getRelevanceModel().getDescriptor();
+
+		if (this.parameters.getStoreThreshold() == 0F) {
+			return descriptor.concat(" - DEFAULT");
+		} else if (this.parameters.getOblivionThreshold() == 0F) {
+			return descriptor.concat(" - STORING_RETRIEVING");
+		} else
+			return descriptor.concat(" - FORGETTING");
 	}
 
 }

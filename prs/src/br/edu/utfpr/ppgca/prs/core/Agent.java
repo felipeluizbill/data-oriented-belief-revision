@@ -20,10 +20,14 @@ public class Agent {
 
 	List<Event> events = new ArrayList<Event>();
 
+	public String getDescriptor() {
+		return beliefBase.getDescriptor().concat(" - ").concat(engine.getDescriptor());
+	}
+
 	public void run() {
-			checkContext(unifyEvent(selectEvent()));
-			executeIntention(selectIntention());
-			monitor.log();
+		checkContext(unifyEvent(selectEvent()));
+		executeIntention(selectIntention());
+		monitor.log();
 	}
 
 	public void setBeliefBase(AbstractBeliefBase beliefBase) {
@@ -47,7 +51,7 @@ public class Agent {
 	public Agenda getAgenda() {
 		return this.agenda;
 	}
-	
+
 	public Monitor getMonitor() {
 		return this.monitor;
 	}
@@ -98,15 +102,15 @@ public class Agent {
 		engine.run(relevantPlans);
 	}
 
-	private Goal selectIntention()  {
+	private Goal selectIntention() {
 		return agenda.selectIntention();
 	}
 
 	private void executeIntention(final Goal intention) {
-		if(intention == null) {
+		if (intention == null) {
 			return;
 		}
-		
+
 		planLibrary.removeGoal(intention);
 		act();
 		sendMessage(null);

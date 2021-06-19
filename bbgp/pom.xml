@@ -20,6 +20,12 @@
 			<version>0.0.1-snapshot</version>
 		</dependency>
 
+		<dependency>
+			<groupId>br.edu.utfpr.ppgca</groupId>
+			<artifactId>dbr</artifactId>
+			<version>0.0.1-snapshot</version>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<sourceDirectory>src</sourceDirectory>

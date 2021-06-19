@@ -26,9 +26,8 @@ public class Environment {
 	static Float dynamic = 0F;
 
 	private static void prepareAgents(final float STORING_THRESHOLD, final float RETRIEVING_THRESHOLD,
-			final float OBLIVION_THRESHOLD, final Integer MEMORY_SIZE) {
-		agents.addAll(
-				AgentFactory.buildBBGPAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD, MEMORY_SIZE));
+			final float OBLIVION_THRESHOLD) {
+		agents.addAll(AgentFactory.buildForgettingAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD));
 	}
 
 	private static void prepareBeliefs(final Integer AMOUNT_OF_BELIEFS) {
@@ -64,7 +63,6 @@ public class Environment {
 			}
 		}
 	}
-
 
 	public static void sendPerception(final Data data) {
 		for (Agent agent : agents) {
@@ -110,8 +108,8 @@ public class Environment {
 
 	public static void prepareEnvironment(final Integer AMOUNT_OF_GOALS, final Integer AMOUNT_OF_BELIEFS,
 			final Integer AMOUNT_OF_RULES_PER_GOAL, final float STORING_THRESHOLD, final float RETRIEVING_THRESHOLD,
-			final float OBLIVION_THRESHOLD, final Integer MEMORY_SIZE, final float GOALS_DYNAMIC) {
-		prepareAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD, MEMORY_SIZE);
+			final float OBLIVION_THRESHOLD, float GOALS_DYNAMIC) {
+		prepareAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD);
 		prepareBeliefs(AMOUNT_OF_BELIEFS);
 		prepareGoals(AMOUNT_OF_GOALS, AMOUNT_OF_RULES_PER_GOAL);
 		preparePlans();
@@ -119,7 +117,7 @@ public class Environment {
 	}
 
 	public static void main(String[] args) {
-		prepareEnvironment(1000, 300, 10, 0.2F, 0.19F, 0.15F, 100, 0F);
+		prepareEnvironment(1000, 300, 10, 0.2F, 0.19F, 0.15F, 0F);
 		while (true) {
 			Clock.getInstance().incrementCounter();
 			sendPerception(beliefs.get(Util.randomInt(beliefs.size())).getData());
