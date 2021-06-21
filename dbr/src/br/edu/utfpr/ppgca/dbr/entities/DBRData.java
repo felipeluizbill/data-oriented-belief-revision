@@ -8,11 +8,11 @@ import br.edu.utfpr.ppgca.prs.entities.Data;
 
 public class DBRData extends Data {
 
-	public DBRData(String content, String source) {
+	public DBRData(Integer content, String source) {
 		super(content, source);
 	}
 
-	public DBRData(String content) {
+	public DBRData(Integer content) {
 		super(content, SELF);
 	}
 

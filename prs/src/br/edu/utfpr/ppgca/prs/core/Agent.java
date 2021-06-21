@@ -21,7 +21,7 @@ public class Agent {
 	List<Event> events = new ArrayList<Event>();
 
 	public String getDescriptor() {
-		return beliefBase.getDescriptor().concat(" - ").concat(engine.getDescriptor());
+		return beliefBase.getDescriptor().concat(" ; ").concat(engine.getDescriptor());
 	}
 
 	public void run() {
@@ -123,5 +123,7 @@ public class Agent {
 	private void act() {
 
 	}
+	
+	
 
 }

@@ -22,7 +22,9 @@ public abstract class AbstractGoalProcessingEngine {
 		this.agentRef = agentRef;
 	}
 
-	public abstract String getDescriptor();
+	public String getDescriptor() {
+		return this.getClass().getSimpleName();
+	}
 
 	public void run(final Collection<Goal> relevantPlans) {
 		Collection<Goal> executiveGoals = process(relevantPlans);
@@ -31,14 +33,22 @@ public abstract class AbstractGoalProcessingEngine {
 
 	public abstract Collection<Goal> process(final Collection<Goal> relevantPlans);
 
+	private <T extends ProceduralRule> boolean areRulesEmpty(Collection<T> rules, Collection<Goal> goalsRef, Goal goal,
+			GoalStatus status) {
+		if (rules.isEmpty()) {
+			goal.setStatus(status);
+			goalsRef.add(goal);
+			return true;
+		}
+		return false;
+	}
+
 	protected Collection<Goal> motivatingStage(final Collection<Goal> relevantPlans) {
 		Collection<Goal> motivatedGoals = new HashSet<>();
 		planLoop: for (Goal p : relevantPlans) {
 			Collection<MotivatingRule> rules = getRules(p, MotivatingRule.class);
-			if (rules.isEmpty()) {
-				p.setStatus(GoalStatus.ACTIVE);
-				motivatedGoals.add(p);
-				continue planLoop;
+			if (areRulesEmpty(rules, motivatedGoals, p, GoalStatus.ACTIVE)) {
+				continue;
 			}
 			for (MotivatingRule r : rules) {
 				for (Belief b : agentRef.getBeliefBase().getBeliefs()) {
@@ -58,9 +68,7 @@ public abstract class AbstractGoalProcessingEngine {
 		Collection<Goal> evaluatedGoals = new HashSet<>();
 		for (Goal g : motivatedGoals) {
 			Collection<ImpossibilityRule> rules = getRules(g, ImpossibilityRule.class);
-			if (rules.isEmpty()) {
-				g.setStatus(GoalStatus.PURSUABLE);
-				evaluatedGoals.add(g);
+			if (areRulesEmpty(rules, evaluatedGoals, g, GoalStatus.PURSUABLE)) {
 				continue;
 			}
 			Collection<ImpossibilityRule> checkdRules = new HashSet<>();
@@ -84,10 +92,8 @@ public abstract class AbstractGoalProcessingEngine {
 		Collection<Goal> deliberatedGoals = new HashSet<>();
 		planLoop: for (Goal g : pursuableGoals) {
 			Collection<DeliberatingRule> rules = getRules(g, DeliberatingRule.class);
-			if (rules.isEmpty()) {
-				g.setStatus(GoalStatus.CHOSEN);
-				deliberatedGoals.add(g);
-				continue planLoop;
+			if (areRulesEmpty(rules, deliberatedGoals, g, GoalStatus.CHOSEN)) {
+				continue;
 			}
 			for (DeliberatingRule r : rules) {
 				for (Belief b : agentRef.getBeliefBase().getBeliefs()) {
@@ -107,9 +113,7 @@ public abstract class AbstractGoalProcessingEngine {
 		Collection<Goal> executiveGoals = new HashSet<>();
 		for (Goal g : chosenGoals) {
 			Collection<CheckingRule> rules = getRules(g, CheckingRule.class);
-			if (rules.isEmpty()) {
-				g.setStatus(GoalStatus.EXECUTIVE);
-				executiveGoals.add(g);
+			if (areRulesEmpty(rules, executiveGoals, g, GoalStatus.EXECUTIVE)) {
 				continue;
 			}
 			Collection<CheckingRule> checkedRules = new HashSet<>();

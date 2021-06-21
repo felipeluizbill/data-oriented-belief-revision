@@ -4,15 +4,33 @@ import java.util.Random;
 
 public class Util {
 
-	static float randomFloat() {
+	private static Util instance;
+	private Integer beliefCounter = 0;
+
+	private Util() {
+
+	}
+
+	public static Util getInstance() {
+		if (instance == null) {
+			instance = new Util();
+		}
+		return instance;
+	}
+
+	public float randomFloat() {
 		return new Random().nextFloat();
 	}
 
-	static int randomInt(final int BOUND) {
+	public int randomInt(final int BOUND) {
 		return new Random().nextInt(BOUND);
 	}
 
-	static String randomString() {
+	public int nextInt() {
+		return beliefCounter++;
+	}
+
+	public String randomString() {
 		int leftLimit = 97; // letter 'a'
 		int rightLimit = 122; // letter 'z'
 		int targetStringLength = 10;

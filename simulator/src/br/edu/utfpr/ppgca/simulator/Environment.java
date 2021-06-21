@@ -26,22 +26,25 @@ public class Environment {
 	static Float dynamic = 0F;
 
 	private static void prepareAgents(final float STORING_THRESHOLD, final float RETRIEVING_THRESHOLD,
-			final float OBLIVION_THRESHOLD) {
+			final float OBLIVION_THRESHOLD, final Integer MEMORY_SIZE) {
+		agents.addAll(AgentFactory.buildDefaultAgents());
+		agents.addAll(AgentFactory.buildStoringRetrievingAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD));
 		agents.addAll(AgentFactory.buildForgettingAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD));
+		agents.forEach(a -> a.getBeliefBase().setMemorySize(MEMORY_SIZE));
 	}
 
 	private static void prepareBeliefs(final Integer AMOUNT_OF_BELIEFS) {
 		for (int i = 0; i < AMOUNT_OF_BELIEFS; i++) {
-			beliefs.add(new Belief(new Data(Util.randomString())));
+			beliefs.add(new Belief(new Data(Util.getInstance().nextInt())));
 		}
 	}
 
 	private static void prepareGoals(final Integer AMOUNT_OF_GOALS, final Integer AMOUNT_OF_RULES_PER_GOAL) {
 		for (int i = 0; i < AMOUNT_OF_GOALS; i++) {
-			Goal goal = new Goal(Util.randomString(), Util.randomFloat());
+			Goal goal = new Goal(Util.getInstance().randomString(), Util.getInstance().randomFloat());
 			for (int j = 0; j < AMOUNT_OF_RULES_PER_GOAL; j++) {
-				Belief belief = beliefs.get(Util.randomInt(beliefs.size()));
-				float randomFloat = Util.randomFloat();
+				Belief belief = beliefs.get(Util.getInstance().randomInt(beliefs.size()));
+				float randomFloat = Util.getInstance().randomFloat();
 				if (randomFloat < 0.25f) {
 					goal.addRule(new MotivatingRule(belief, goal));
 				} else if (randomFloat < 0.5f) {
@@ -64,11 +67,23 @@ public class Environment {
 		}
 	}
 
-	public static void sendPerception(final Data data) {
+	public static void sendPerception() {
+		Data perception = drawPerception();
+
 		for (Agent agent : agents) {
-			agent.perceive(data);
+			agent.perceive(perception);
 			agent.run();
 		}
+
+		Clock.getInstance().incrementCounter();
+		Environment.updateGoals();
+	}
+
+	public static Data drawPerception() {
+		int randomInt = Util.getInstance().randomInt(beliefs.size());
+		Belief randomBelief = beliefs.get(randomInt);
+		beliefs.remove(randomBelief);
+		return randomBelief.getData();
 	}
 
 	public static boolean terminate() {
@@ -80,11 +95,9 @@ public class Environment {
 		return false;
 	}
 
-	public static void log() {
+	public static void printLogs() {
 		for (Agent agent : agents) {
-			agent.getMonitor().getLogs().forEach(l -> {
-				System.out.println(l);
-			});
+			agent.getMonitor().printLog();
 		}
 	}
 
@@ -108,25 +121,16 @@ public class Environment {
 
 	public static void prepareEnvironment(final Integer AMOUNT_OF_GOALS, final Integer AMOUNT_OF_BELIEFS,
 			final Integer AMOUNT_OF_RULES_PER_GOAL, final float STORING_THRESHOLD, final float RETRIEVING_THRESHOLD,
-			final float OBLIVION_THRESHOLD, float GOALS_DYNAMIC) {
-		prepareAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD);
+			final float OBLIVION_THRESHOLD, float GOALS_DYNAMIC, final Integer MEMORY_SIZE) {
+		agents.clear();
+		beliefs.clear();
+		goals.clear();
+
+		prepareAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD, MEMORY_SIZE);
 		prepareBeliefs(AMOUNT_OF_BELIEFS);
 		prepareGoals(AMOUNT_OF_GOALS, AMOUNT_OF_RULES_PER_GOAL);
 		preparePlans();
 		dynamic = GOALS_DYNAMIC;
-	}
-
-	public static void main(String[] args) {
-		prepareEnvironment(1000, 300, 10, 0.2F, 0.19F, 0.15F, 0F);
-		while (true) {
-			Clock.getInstance().incrementCounter();
-			sendPerception(beliefs.get(Util.randomInt(beliefs.size())).getData());
-			updateGoals();
-			if (terminate()) {
-				break;
-			}
-		}
-
 	}
 
 }
