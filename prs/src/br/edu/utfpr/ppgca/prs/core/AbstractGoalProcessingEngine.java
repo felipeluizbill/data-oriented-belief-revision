@@ -33,6 +33,22 @@ public abstract class AbstractGoalProcessingEngine {
 
 	public abstract Collection<Goal> process(final Collection<Goal> relevantPlans);
 
+	protected Collection<Goal> motivatingStage(final Collection<Goal> relevantPlans) {
+		return runStage(relevantPlans, MotivatingRule.class, GoalStatus.ACTIVE, false);
+	}
+
+	protected Collection<Goal> assessmentStage(final Collection<Goal> motivatedGoals) {
+		return runStage(motivatedGoals, ImpossibilityRule.class, GoalStatus.PURSUABLE, true);
+	}
+
+	protected Collection<Goal> deliberationStage(final Collection<Goal> pursuableGoals) {
+		return runStage(pursuableGoals, DeliberatingRule.class, GoalStatus.CHOSEN, false);
+	}
+
+	protected Collection<Goal> checkingStage(final Collection<Goal> chosenGoals) {
+		return runStage(chosenGoals, CheckingRule.class, GoalStatus.EXECUTIVE, true);
+	}
+
 	private <T extends ProceduralRule> boolean areRulesEmpty(Collection<T> rules, Collection<Goal> goalsRef, Goal goal,
 			GoalStatus status) {
 		if (rules.isEmpty()) {
@@ -43,94 +59,54 @@ public abstract class AbstractGoalProcessingEngine {
 		return false;
 	}
 
-	protected Collection<Goal> motivatingStage(final Collection<Goal> relevantPlans) {
-		Collection<Goal> motivatedGoals = new HashSet<>();
-		planLoop: for (Goal p : relevantPlans) {
-			Collection<MotivatingRule> rules = getRules(p, MotivatingRule.class);
-			if (areRulesEmpty(rules, motivatedGoals, p, GoalStatus.ACTIVE)) {
-				continue;
-			}
-			for (MotivatingRule r : rules) {
-				for (Belief b : agentRef.getBeliefBase().getBeliefs()) {
-					counter++;
-					if (r.unify(b) != null) {
-						p.setStatus(GoalStatus.ACTIVE);
-						motivatedGoals.add(p);
-						continue planLoop;
-					}
+	private <T extends ProceduralRule> void positiveFilter(Collection<T> rules, Collection<Goal> goalsRef, Goal goal,
+			final GoalStatus STATUS) {
+		for (T rule : rules) {
+			for (Belief belief : agentRef.beliefBase.getBeliefs()) {
+				counter++;
+				if (rule.unify(belief) != null) {
+					promoteGoal(goal, goalsRef, STATUS);
+					return;
 				}
 			}
 		}
-		return motivatedGoals;
 	}
 
-	protected Collection<Goal> assessmentStage(final Collection<Goal> motivatedGoals) {
-		Collection<Goal> evaluatedGoals = new HashSet<>();
-		for (Goal g : motivatedGoals) {
-			Collection<ImpossibilityRule> rules = getRules(g, ImpossibilityRule.class);
-			if (areRulesEmpty(rules, evaluatedGoals, g, GoalStatus.PURSUABLE)) {
-				continue;
-			}
-			Collection<ImpossibilityRule> checkdRules = new HashSet<>();
-			for (ImpossibilityRule r : rules) {
-				for (Belief b : agentRef.getBeliefBase().getBeliefs()) {
-					counter++;
-					if (r.unify(b) != null) {
-						checkdRules.add(r);
-					}
+	private <T extends ProceduralRule> void negativeFilter(Collection<T> rules, Collection<Goal> goalsRef, Goal goal,
+			final GoalStatus STATUS) {
+		Collection<T> checkedRules = new HashSet<>();
+		for (T rule : rules) {
+			for (Belief belief : agentRef.beliefBase.getBeliefs()) {
+				counter++;
+				if (rule.unify(belief) != null) {
+					checkedRules.add(rule);
 				}
 			}
-			if (rules.size() == checkdRules.size()) {
-				g.setStatus(GoalStatus.PURSUABLE);
-				evaluatedGoals.add(g);
-			}
 		}
-		return evaluatedGoals;
+		if (rules.size() == checkedRules.size()) {
+			promoteGoal(goal, goalsRef, STATUS);
+		}
 	}
 
-	protected Collection<Goal> deliberationStage(final Collection<Goal> pursuableGoals) {
-		Collection<Goal> deliberatedGoals = new HashSet<>();
-		planLoop: for (Goal g : pursuableGoals) {
-			Collection<DeliberatingRule> rules = getRules(g, DeliberatingRule.class);
-			if (areRulesEmpty(rules, deliberatedGoals, g, GoalStatus.CHOSEN)) {
-				continue;
-			}
-			for (DeliberatingRule r : rules) {
-				for (Belief b : agentRef.getBeliefBase().getBeliefs()) {
-					counter++;
-					if (r.unify(b) != null) {
-						g.setStatus(GoalStatus.CHOSEN);
-						deliberatedGoals.add(g);
-						continue planLoop;
-					}
-				}
-			}
-		}
-		return deliberatedGoals;
+	private void promoteGoal(Goal goal, Collection<Goal> nextStageGoalsRef, final GoalStatus STATUS) {
+		nextStageGoalsRef.add(goal);
+		goal.setStatus(STATUS);
 	}
 
-	protected Collection<Goal> checkingStage(final Collection<Goal> chosenGoals) {
-		Collection<Goal> executiveGoals = new HashSet<>();
-		for (Goal g : chosenGoals) {
-			Collection<CheckingRule> rules = getRules(g, CheckingRule.class);
-			if (areRulesEmpty(rules, executiveGoals, g, GoalStatus.EXECUTIVE)) {
+	private <T extends ProceduralRule> Collection<Goal> runStage(final Collection<Goal> originalGoals,
+			final Class<T> ruleType, final GoalStatus STATUS, final boolean NEGATIVE_FILTER) {
+		Collection<Goal> filteredGoals = new HashSet<>();
+		for (Goal g : originalGoals) {
+			Collection<? extends ProceduralRule> rules = getRules(g, ruleType);
+			if (areRulesEmpty(rules, filteredGoals, g, STATUS)) {
 				continue;
 			}
-			Collection<CheckingRule> checkedRules = new HashSet<>();
-			for (CheckingRule r : rules) {
-				for (Belief b : agentRef.getBeliefBase().getBeliefs()) {
-					counter++;
-					if (r.unify(b) != null) {
-						checkedRules.add(r);
-					}
-				}
+			if (NEGATIVE_FILTER) {
+				negativeFilter(rules, filteredGoals, g, STATUS);
 			}
-			if (rules.size() == checkedRules.size()) {
-				g.setStatus(GoalStatus.EXECUTIVE);
-				executiveGoals.add(g);
-			}
+			positiveFilter(rules, filteredGoals, g, STATUS);
 		}
-		return executiveGoals;
+		return filteredGoals;
 	}
 
 	protected static <T extends ProceduralRule> Collection<T> getRules(final Goal goal, Class<T> rule) {

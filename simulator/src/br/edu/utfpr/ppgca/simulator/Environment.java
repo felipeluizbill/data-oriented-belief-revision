@@ -60,20 +60,20 @@ public class Environment {
 	}
 
 	private static void preparePlans() {
-		for (Agent agent : agents) {
-			for (Goal goal : goals) {
-				agent.getPlanLibrary().addGoal(goal);
-			}
-		}
+		agents.forEach(a -> {
+			goals.forEach(g -> {
+				a.getPlanLibrary().addGoal(g);
+			});
+		});
 	}
 
 	public static void sendPerception() {
 		Data perception = drawPerception();
 
-		for (Agent agent : agents) {
-			agent.perceive(perception);
-			agent.run();
-		}
+		agents.forEach(a -> {
+			a.perceive(perception);
+			a.run();
+		});
 
 		Clock.getInstance().incrementCounter();
 		Environment.updateGoals();
@@ -81,24 +81,15 @@ public class Environment {
 
 	public static Data drawPerception() {
 		int randomInt = Util.getInstance().randomInt(beliefs.size());
-		Belief randomBelief = beliefs.get(randomInt);
-		beliefs.remove(randomBelief);
-		return randomBelief.getData();
+		return beliefs.get(randomInt).getData();
 	}
 
 	public static boolean terminate() {
-		for (Agent agent : agents) {
-			if (agent.getPlanLibrary().getGoals().isEmpty()) {
-				return true;
-			}
-		}
-		return false;
+		return agents.stream().anyMatch(a -> a.getPlanLibrary().getGoals().isEmpty());
 	}
 
 	public static void printLogs() {
-		for (Agent agent : agents) {
-			agent.getMonitor().printLog();
-		}
+		agents.forEach(a -> a.getMonitor().printLog());
 	}
 
 	public static void updateGoals() {
@@ -131,6 +122,11 @@ public class Environment {
 		prepareGoals(AMOUNT_OF_GOALS, AMOUNT_OF_RULES_PER_GOAL);
 		preparePlans();
 		dynamic = GOALS_DYNAMIC;
+	}
+
+	public static void dump() {
+		System.out.println("dumping");
+
 	}
 
 }
