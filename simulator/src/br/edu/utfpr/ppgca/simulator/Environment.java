@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.Set;
 
 import br.edu.utfpr.ppgca.prs.core.Agent;
+import br.edu.utfpr.ppgca.prs.core.Clock;
 import br.edu.utfpr.ppgca.prs.entities.Belief;
 import br.edu.utfpr.ppgca.prs.entities.Data;
 import br.edu.utfpr.ppgca.prs.entities.Goal;
@@ -72,7 +73,8 @@ public class Environment {
 
 	public static void sendPerception() {
 		List<Data> perceptionSequence = drawPerceptions();
-
+		Clock.getInstance();
+		
 		agents.parallelStream().forEach(a -> {
 			a.perceive(perceptionSequence);
 		});
