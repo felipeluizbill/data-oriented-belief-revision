@@ -1,28 +1,26 @@
 package br.edu.utfpr.ppgca.prs.entities;
 
-import br.edu.utfpr.ppgca.prs.core.Clock;
-
 public class Data extends AbstractEpistemicEntity {
 
 	public static final String SELF = "SELF";
 
-	protected final String content;
+	protected final Integer content;
 	protected final String source;
 
-	protected Integer lastActivation = 0;
+	protected Long lastActivation = 0L;
 
-	public Data(String content) {
+	public Data(Integer content) {
 		this.content = content;
 		this.source = SELF;
 	}
 
-	public Data(String content, String source) {
+	public Data(Integer content, String source) {
 		super();
 		this.content = content;
 		this.source = source;
 	}
 
-	public String getContent() {
+	public Integer getContent() {
 		return content;
 	}
 
@@ -30,11 +28,11 @@ public class Data extends AbstractEpistemicEntity {
 		return source;
 	}
 
-	public void updateLastActivation(Clock clock) {
-		this.lastActivation = clock.getCounter();
+	public void updateLastActivation() {
+		this.lastActivation = System.currentTimeMillis();
 	}
 
-	public Integer getLastActivation() {
+	public Long getLastActivation() {
 		return this.lastActivation;
 	}
 

@@ -20,29 +20,42 @@ public class Monitor {
 
 	public void log() {
 		Log log = new Log();
-		log.clockCounter = Clock.getInstance().getCounter();
 		log.operations = agentRef.beliefBase.getOperations();
 		log.activeBeliefs = agentRef.beliefBase.getBeliefs().size();
 		log.cycles = agentRef.engine.getCounter();
 		log.utilitySum = agentRef.agenda.getUtilitySum();
 		log.plansRemaining = agentRef.planLibrary.goals.size();
-		System.out.println(agentRef.getDescriptor() + log);
+		log.memoryEfficiency = log.utilitySum / (float) log.activeBeliefs;
+		log.cpuEfficiency = log.utilitySum*1_000 / (float) log.cycles;
+
 		logs.add(log);
 	}
 
+	public void printLog() {
+		System.out.println(this);
+	}
+
+	@Override
+	public String toString() {
+		Log lastLog = logs.get(logs.size() - 1);
+		return "Monitor [agentRef=" + agentRef.getDescriptor() + ", lastLog=" + lastLog + "]";
+	}
+
 	public class Log {
-		Integer clockCounter;
 		Long operations;
 		Integer activeBeliefs;
 		Long cycles;
 		Float utilitySum;
 		Integer plansRemaining;
+		Float memoryEfficiency;
+		Float cpuEfficiency;
 
 		@Override
 		public String toString() {
-			return "Log [clockCounter=" + clockCounter + ", operations=" + operations + ", activeBeliefs="
-					+ activeBeliefs + ", cycles=" + cycles + ", utilitySum=" + utilitySum + ", plansRemaining="
-					+ plansRemaining + "]";
+			return "Log [operations=" + operations + ", activeBeliefs="
+					+ activeBeliefs + ", cycles=" + cycles + ", utilitySum=" + utilitySum + ", memoryEfficiency="
+					+ String.valueOf(memoryEfficiency).replace(".", ",") + ", cpuEfficiency="
+					+ String.valueOf(cpuEfficiency).replace(".", ",") + "]";
 		}
 
 	}

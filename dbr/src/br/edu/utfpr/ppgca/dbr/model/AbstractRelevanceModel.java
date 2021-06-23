@@ -9,7 +9,9 @@ import br.edu.utfpr.ppgca.prs.entities.Goal;
 
 public abstract class AbstractRelevanceModel {
 
-	public abstract Float compute(Belief belief, Collection<Goal> supportingGoals);
+	public Float compute(Belief belief, Collection<Goal> supportingGoals) {
+		return compute(belief.getData(), supportingGoals);
+	}
 
 	public abstract Float compute(Data data, Collection<Goal> supportingGoals);
 
@@ -18,7 +20,8 @@ public abstract class AbstractRelevanceModel {
 	}
 
 	protected Float getAge(Data data) {
-		return Clock.getInstance().getAge(data.getLastActivation());
+		Float age = Clock.getInstance().getAge(data);
+		return age <= 0 ? 0.01F : age;
 	}
 
 	protected Float utilitySum(Collection<Goal> supportingGoals) {

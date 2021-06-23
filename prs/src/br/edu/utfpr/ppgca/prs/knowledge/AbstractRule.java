@@ -1,6 +1,5 @@
 package br.edu.utfpr.ppgca.prs.knowledge;
 
-import br.edu.utfpr.ppgca.prs.core.Clock;
 import br.edu.utfpr.ppgca.prs.entities.AbstractEpistemicEntity;
 import br.edu.utfpr.ppgca.prs.entities.Belief;
 
@@ -18,7 +17,7 @@ public abstract class AbstractRule<T extends AbstractEpistemicEntity> {
 		if (!this.condition.getData().getContent().equals(belief.getData().getContent())) {
 			return null;
 		}
-		belief.getData().updateLastActivation(Clock.getInstance());
+		belief.getData().updateLastActivation();
 		return this.consequent;
 	}
 

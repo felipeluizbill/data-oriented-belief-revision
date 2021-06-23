@@ -14,20 +14,14 @@ public class Agent {
 
 	Agenda agenda = new Agenda(this);
 	AbstractBeliefBase beliefBase;
-	PlanLibrary planLibrary = new PlanLibrary(this);
+	PlanLibrary planLibrary = new PlanLibrary();
 	Monitor monitor = new Monitor(this);
 	AbstractGoalProcessingEngine engine;
 
 	List<Event> events = new ArrayList<Event>();
 
 	public String getDescriptor() {
-		return beliefBase.getDescriptor().concat(" - ").concat(engine.getDescriptor());
-	}
-
-	public void run() {
-		checkContext(unifyEvent(selectEvent()));
-		executeIntention(selectIntention());
-		monitor.log();
+		return beliefBase.getDescriptor().concat(" ; ").concat(engine.getDescriptor());
 	}
 
 	public void setBeliefBase(AbstractBeliefBase beliefBase) {
@@ -56,13 +50,16 @@ public class Agent {
 		return this.monitor;
 	}
 
-	public void perceive(final Collection<Data> perceptions) {
+	public void perceive(final List<Data> perceptions) {
 		perceptions.forEach(p -> perceive(p));
 	}
 
 	public void perceive(final Data perception) {
 		this.beliefBase.beliefUpdate(perception);
 		this.beliefBase.beliefRevision();
+		this.engine.checkContext(unifyEvent(selectEvent()));
+		executeIntention(selectIntention());
+		monitor.log();
 	}
 
 	public void checkMail(Collection<Message> messages) {
@@ -96,10 +93,6 @@ public class Agent {
 
 	private Collection<Goal> unifyEvent(final Event event) {
 		return planLibrary.selectRelevantPlans(event);
-	}
-
-	private void checkContext(final Collection<Goal> relevantPlans) {
-		engine.run(relevantPlans);
 	}
 
 	private Goal selectIntention() {

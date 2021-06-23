@@ -15,10 +15,4 @@ public class BBGPEngine extends AbstractGoalProcessingEngine {
 		Collection<Goal> executiveGoals = checkingStage(chosenGoals);
 		return executiveGoals;
 	}
-
-	@Override
-	public String getDescriptor() {
-		return "BBGP";
-	}
-
 }

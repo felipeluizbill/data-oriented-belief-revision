@@ -45,7 +45,7 @@ public class DBRBeliefBase extends AbstractBeliefBase {
 	}
 
 	public void beliefRevision() {
-		if (this.beliefLayer.active.size() < 100) {
+		if (this.beliefLayer.active.size() < memorySize) {
 			return;
 		}
 
@@ -80,11 +80,11 @@ public class DBRBeliefBase extends AbstractBeliefBase {
 		String descriptor = parameters.getRelevanceModel().getDescriptor();
 
 		if (this.parameters.getStoreThreshold() == 0F) {
-			return descriptor.concat(" - DEFAULT");
+			return descriptor.concat(" ; DEFAULT");
 		} else if (this.parameters.getOblivionThreshold() == 0F) {
-			return descriptor.concat(" - STORING_RETRIEVING");
+			return descriptor.concat(" ; STORING_RETRIEVING");
 		} else
-			return descriptor.concat(" - FORGETTING");
+			return descriptor.concat(" ; FORGETTING");
 	}
 
 }

@@ -1,12 +1,16 @@
+
 package br.edu.utfpr.ppgca.prs.core;
+
+import br.edu.utfpr.ppgca.prs.entities.Belief;
+import br.edu.utfpr.ppgca.prs.entities.Data;
 
 public class Clock {
 
 	private static Clock instance;
-	private Integer counter = 0;
+	private Long startTime;
 
 	private Clock() {
-
+		this.startTime = System.currentTimeMillis();
 	}
 
 	public static Clock getInstance() {
@@ -16,16 +20,19 @@ public class Clock {
 		return instance;
 	}
 
-	public void incrementCounter() {
-		counter++;
+	public Long getStartTime() {
+		return this.startTime;
 	}
 
-	public Integer getCounter() {
-		return this.counter;
+	public Float getAge(final Belief BELIEF) {
+		return getAge(BELIEF.getData());
 	}
 
-	public Float getAge(final Integer MOMENT) {
-		return (float) MOMENT / (float) counter;
+	public Float getAge(final Data DATA) {
+		Long lastActivation = DATA.getLastActivation();
+		long now = System.currentTimeMillis();
+		
+		return (float) (lastActivation - startTime) / (float) (now - startTime);
 	}
 
 }
