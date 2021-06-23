@@ -8,7 +8,6 @@ import java.util.Random;
 import java.util.Set;
 
 import br.edu.utfpr.ppgca.prs.core.Agent;
-import br.edu.utfpr.ppgca.prs.core.Clock;
 import br.edu.utfpr.ppgca.prs.entities.Belief;
 import br.edu.utfpr.ppgca.prs.entities.Data;
 import br.edu.utfpr.ppgca.prs.entities.Goal;
@@ -67,21 +66,27 @@ public class Environment {
 		});
 	}
 
+	public static void run() {
+
+	}
+
 	public static void sendPerception() {
-		Data perception = drawPerception();
+		List<Data> perceptionSequence = drawPerceptions();
 
 		agents.forEach(a -> {
-			a.perceive(perception);
-			a.run();
+			a.perceive(perceptionSequence);
 		});
 
-		Clock.getInstance().incrementCounter();
 		Environment.updateGoals();
 	}
 
-	public static Data drawPerception() {
-		int randomInt = Util.getInstance().randomInt(beliefs.size());
-		return beliefs.get(randomInt).getData();
+	public static List<Data> drawPerceptions() {
+		List<Data> perceptionSequence = new ArrayList<>();
+		for (int i = 0; i < beliefs.size(); i++) {
+			int randomInt = Util.getInstance().randomInt(beliefs.size());
+			perceptionSequence.add(beliefs.get(randomInt).getData());
+		}
+		return perceptionSequence;
 	}
 
 	public static boolean terminate() {

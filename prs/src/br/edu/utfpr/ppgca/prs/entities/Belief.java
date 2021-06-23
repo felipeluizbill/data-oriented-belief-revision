@@ -1,12 +1,9 @@
 package br.edu.utfpr.ppgca.prs.entities;
 
-import br.edu.utfpr.ppgca.prs.core.Clock;
-
 public class Belief extends AbstractEpistemicEntity {
 
 	protected Data data;
 	protected Float strength = 1F;
-
 
 	public Belief(Data data) {
 		this.data = data;

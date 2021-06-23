@@ -26,7 +26,7 @@ public abstract class AbstractGoalProcessingEngine {
 		return this.getClass().getSimpleName();
 	}
 
-	public void run(final Collection<Goal> relevantPlans) {
+	public void checkContext(final Collection<Goal> relevantPlans) {
 		Collection<Goal> executiveGoals = process(relevantPlans);
 		agentRef.getAgenda().addIntention(executiveGoals);
 	}

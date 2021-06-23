@@ -20,7 +20,6 @@ public class Monitor {
 
 	public void log() {
 		Log log = new Log();
-		log.clockCounter = Clock.getInstance().getCounter();
 		log.operations = agentRef.beliefBase.getOperations();
 		log.activeBeliefs = agentRef.beliefBase.getBeliefs().size();
 		log.cycles = agentRef.engine.getCounter();
@@ -54,7 +53,7 @@ public class Monitor {
 
 		@Override
 		public String toString() {
-			return "Log [clockCounter=" + clockCounter + ", operations=" + operations + ", activeBeliefs="
+			return "Log [operations=" + operations + ", activeBeliefs="
 					+ activeBeliefs + ", cycles=" + cycles + ", utilitySum=" + utilitySum + ", memoryEfficiency="
 					+ String.valueOf(memoryEfficiency).replace(".", ",") + ", cpuEfficiency="
 					+ String.valueOf(cpuEfficiency).replace(".", ",") + "]";

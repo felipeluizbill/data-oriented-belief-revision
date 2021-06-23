@@ -24,12 +24,6 @@ public class Agent {
 		return beliefBase.getDescriptor().concat(" ; ").concat(engine.getDescriptor());
 	}
 
-	public void run() {
-		checkContext(unifyEvent(selectEvent()));
-		executeIntention(selectIntention());
-		monitor.log();
-	}
-
 	public void setBeliefBase(AbstractBeliefBase beliefBase) {
 		beliefBase.setAgentRef(this);
 		this.beliefBase = beliefBase;
@@ -56,13 +50,16 @@ public class Agent {
 		return this.monitor;
 	}
 
-	public void perceive(final Collection<Data> perceptions) {
+	public void perceive(final List<Data> perceptions) {
 		perceptions.forEach(p -> perceive(p));
 	}
 
 	public void perceive(final Data perception) {
 		this.beliefBase.beliefUpdate(perception);
 		this.beliefBase.beliefRevision();
+		this.engine.checkContext(unifyEvent(selectEvent()));
+		executeIntention(selectIntention());
+		monitor.log();
 	}
 
 	public void checkMail(Collection<Message> messages) {
@@ -98,10 +95,6 @@ public class Agent {
 		return planLibrary.selectRelevantPlans(event);
 	}
 
-	private void checkContext(final Collection<Goal> relevantPlans) {
-		engine.run(relevantPlans);
-	}
-
 	private Goal selectIntention() {
 		return agenda.selectIntention();
 	}
@@ -123,7 +116,5 @@ public class Agent {
 	private void act() {
 
 	}
-	
-	
 
 }

@@ -2,14 +2,15 @@ package br.edu.utfpr.ppgca.dbr.model;
 
 import java.util.Collection;
 
-import br.edu.utfpr.ppgca.prs.core.Clock;
 import br.edu.utfpr.ppgca.prs.entities.Belief;
 import br.edu.utfpr.ppgca.prs.entities.Data;
 import br.edu.utfpr.ppgca.prs.entities.Goal;
 
 public abstract class AbstractRelevanceModel {
 
-	public abstract Float compute(Belief belief, Collection<Goal> supportingGoals);
+	public Float compute(Belief belief, Collection<Goal> supportingGoals) {
+		return compute(belief.getData(), supportingGoals);
+	}
 
 	public abstract Float compute(Data data, Collection<Goal> supportingGoals);
 
@@ -18,7 +19,7 @@ public abstract class AbstractRelevanceModel {
 	}
 
 	protected Float getAge(Data data) {
-		return Clock.getInstance().getAge(data.getLastActivation());
+		return (float) data.getLastActivation() / (float) System.currentTimeMillis();
 	}
 
 	protected Float utilitySum(Collection<Goal> supportingGoals) {
