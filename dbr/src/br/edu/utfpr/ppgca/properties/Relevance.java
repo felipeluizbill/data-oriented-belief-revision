@@ -17,7 +17,7 @@ public class Relevance extends AbstractEpistemicProperty {
 		float minUtilitySum = Float.MAX_VALUE;
 
 		for (DBRBelief belief : beliefLayer.getAll()) {
-			Collection<Goal> supportingGoals = planLibrary.selectSupportingGoals(belief);
+			Collection<Goal> supportingGoals = planLibrary.selectRelevantPlans(belief);
 			Float relevanceValue = relevanceModel.compute(belief, supportingGoals);
 
 			if (relevanceValue > maxUtilitySum) {
@@ -38,7 +38,7 @@ public class Relevance extends AbstractEpistemicProperty {
 		float minUtilitySum = Float.MAX_VALUE;
 
 		for (DBRData data : dataLayer.getAll()) {
-			Collection<Goal> supportingGoals = planLibrary.selectSupportingGoals(data);
+			Collection<Goal> supportingGoals = planLibrary.selectRelevantPlans(data);
 			Float relevanceValue = relevanceModel.compute(data, supportingGoals);
 
 			if (relevanceValue > maxUtilitySum) {

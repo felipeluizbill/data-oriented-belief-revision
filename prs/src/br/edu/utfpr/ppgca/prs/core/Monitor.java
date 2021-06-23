@@ -42,7 +42,6 @@ public class Monitor {
 	}
 
 	public class Log {
-		Integer clockCounter;
 		Long operations;
 		Integer activeBeliefs;
 		Long cycles;

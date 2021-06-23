@@ -14,7 +14,7 @@ public class Agent {
 
 	Agenda agenda = new Agenda(this);
 	AbstractBeliefBase beliefBase;
-	PlanLibrary planLibrary = new PlanLibrary(this);
+	PlanLibrary planLibrary = new PlanLibrary();
 	Monitor monitor = new Monitor(this);
 	AbstractGoalProcessingEngine engine;
 

@@ -34,19 +34,21 @@ public abstract class AbstractGoalProcessingEngine {
 	public abstract Collection<Goal> process(final Collection<Goal> relevantPlans);
 
 	protected Collection<Goal> motivatingStage(final Collection<Goal> relevantPlans) {
-		return runStage(relevantPlans, MotivatingRule.class, GoalStatus.ACTIVE, false);
+		return runStage(relevantPlans, MotivatingRule.class, GoalStatus.ACTIVE, GoalProcessingStageFilterType.POSITIVE);
 	}
 
 	protected Collection<Goal> assessmentStage(final Collection<Goal> motivatedGoals) {
-		return runStage(motivatedGoals, ImpossibilityRule.class, GoalStatus.PURSUABLE, true);
+		return runStage(motivatedGoals, ImpossibilityRule.class, GoalStatus.PURSUABLE,
+				GoalProcessingStageFilterType.NEGATIVE);
 	}
 
 	protected Collection<Goal> deliberationStage(final Collection<Goal> pursuableGoals) {
-		return runStage(pursuableGoals, DeliberatingRule.class, GoalStatus.CHOSEN, false);
+		return runStage(pursuableGoals, DeliberatingRule.class, GoalStatus.CHOSEN,
+				GoalProcessingStageFilterType.POSITIVE);
 	}
 
 	protected Collection<Goal> checkingStage(final Collection<Goal> chosenGoals) {
-		return runStage(chosenGoals, CheckingRule.class, GoalStatus.EXECUTIVE, true);
+		return runStage(chosenGoals, CheckingRule.class, GoalStatus.EXECUTIVE, GoalProcessingStageFilterType.NEGATIVE);
 	}
 
 	private <T extends ProceduralRule> boolean areRulesEmpty(Collection<T> rules, Collection<Goal> goalsRef, Goal goal,
@@ -94,17 +96,18 @@ public abstract class AbstractGoalProcessingEngine {
 	}
 
 	private <T extends ProceduralRule> Collection<Goal> runStage(final Collection<Goal> originalGoals,
-			final Class<T> ruleType, final GoalStatus STATUS, final boolean NEGATIVE_FILTER) {
+			final Class<T> ruleType, final GoalStatus STATUS, final GoalProcessingStageFilterType FILTER_TYPE) {
 		Collection<Goal> filteredGoals = new HashSet<>();
 		for (Goal g : originalGoals) {
 			Collection<? extends ProceduralRule> rules = getRules(g, ruleType);
 			if (areRulesEmpty(rules, filteredGoals, g, STATUS)) {
 				continue;
 			}
-			if (NEGATIVE_FILTER) {
+			if (GoalProcessingStageFilterType.POSITIVE.equals(FILTER_TYPE)) {
+				positiveFilter(rules, filteredGoals, g, STATUS);
+			} else {
 				negativeFilter(rules, filteredGoals, g, STATUS);
 			}
-			positiveFilter(rules, filteredGoals, g, STATUS);
 		}
 		return filteredGoals;
 	}

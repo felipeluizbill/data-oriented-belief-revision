@@ -12,13 +12,6 @@ public class PlanLibrary {
 
 	Collection<Goal> goals = new HashSet<>();
 
-	private final Agent agentRef;
-
-	public PlanLibrary(Agent agentRef) {
-		super();
-		this.agentRef = agentRef;
-	}
-
 	public void addGoal(final Goal goal) {
 		if (this.goals.contains(goal)) {
 			return;
@@ -50,17 +43,17 @@ public class PlanLibrary {
 		return relevantPlans;
 	}
 
-	public Collection<Goal> selectSupportingGoals(final Data data) {
-		return selectSupportingGoals(new Belief(data));
+	public Collection<Goal> selectRelevantPlans(final Data data) {
+		return selectRelevantPlans(new Belief(data));
 	}
 
-	public Collection<Goal> selectSupportingGoals(final Belief belief) {
-		Collection<Goal> supportingGoals = new HashSet<>();
+	public Collection<Goal> selectRelevantPlans(final Belief belief) {
+		Collection<Goal> relevantPlans = new HashSet<>();
 		this.goals.forEach(g -> {
 			if (g.doesItSupport(belief)) {
-				supportingGoals.add(g);
+				relevantPlans.add(g);
 			}
 		});
-		return supportingGoals;
+		return relevantPlans;
 	}
 }
