@@ -1,19 +1,15 @@
 package br.edu.utfpr.ppgca.simulator;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 
 import org.junit.Test;
-
-import br.edu.utfpr.ppgca.prs.core.Agent;
 
 public class Scenarios {
 
 	final int AMOUNT_OF_GOALS[] = { 100, 200, 400, 800 };
 	final int ENVIRONMENT_PROPORTION[] = { 10, 20, 40, 80 };
 	final int RULES_PER_GOAL[] = { 4, 8, 16 };
-	final int MEMORY_PROPORTION[] = { 2, 4, 8};
+	final int MEMORY_PROPORTION[] = { 2, 4, 8 };
 
 	// thresholds
 	final float[] STORING_THRESHOLDS = { 0.1F, 0.2F, 0.4F };
@@ -36,17 +32,17 @@ public class Scenarios {
 	public void repeatExperiment(final Integer AMOUNT_OF_GOALS, final Integer ENVIRONMENT_SIZE,
 			final Integer RULES_PER_GOAL, final Float STORING_THRESHOLD, final Float RETRIEVING_THRESHOLD,
 			final Float OBLIVION_THRESHOLD, final Float DYNAMIC, final Integer MEMORY_SIZE) {
-		//Collection<Agent> agents = new HashSet<>();
-		Arrays.asList(REPETITIONS).parallelStream().forEach(i ->{
+		// Collection<Agent> agents = new HashSet<>();
+		Arrays.asList(REPETITIONS).parallelStream().forEach(i -> {
 			Environment.prepareEnvironment(AMOUNT_OF_GOALS, ENVIRONMENT_SIZE, RULES_PER_GOAL, STORING_THRESHOLD,
 					RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD, DYNAMIC, MEMORY_SIZE);
-			while (!Environment.terminate()) {
-				Environment.sendPerception();
-			}
-			//agents.addAll(Environment.agents);
-			Environment.printLogs();			
+
+			Environment.sendPerception();
+
+			// agents.addAll(Environment.agents);
+			Environment.printLogs();
 		});
-		
+
 	}
 
 }

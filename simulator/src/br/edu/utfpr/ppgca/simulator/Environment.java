@@ -73,7 +73,7 @@ public class Environment {
 	public static void sendPerception() {
 		List<Data> perceptionSequence = drawPerceptions();
 
-		agents.forEach(a -> {
+		agents.parallelStream().forEach(a -> {
 			a.perceive(perceptionSequence);
 		});
 
@@ -87,10 +87,6 @@ public class Environment {
 			perceptionSequence.add(beliefs.get(randomInt).getData());
 		}
 		return perceptionSequence;
-	}
-
-	public static boolean terminate() {
-		return agents.stream().anyMatch(a -> a.getPlanLibrary().getGoals().isEmpty());
 	}
 
 	public static void printLogs() {
