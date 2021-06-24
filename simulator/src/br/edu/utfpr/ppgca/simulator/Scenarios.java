@@ -1,13 +1,11 @@
 package br.edu.utfpr.ppgca.simulator;
 
-import java.util.Arrays;
-
 import org.junit.Test;
 
 public class Scenarios {
 
-	final int AMOUNT_OF_GOALS[] = { 100, 200, 400, 800 };
-	final int ENVIRONMENT_PROPORTION[] = { 10, 20, 40, 80 };
+	final int AMOUNT_OF_GOALS[] = { 10, 100, 1000 };
+	final int ENVIRONMENT_PROPORTION[] = { 10, 10, 100 };
 	final int RULES_PER_GOAL[] = { 4, 8, 16 };
 	final int MEMORY_PROPORTION[] = { 2, 4, 8 };
 
@@ -24,24 +22,28 @@ public class Scenarios {
 
 	@Test
 	public void generalScenario() {
-		repeatExperiment(AMOUNT_OF_GOALS[0], (ENVIRONMENT_PROPORTION[0] * AMOUNT_OF_GOALS[0]), RULES_PER_GOAL[0],
-				STORING_THRESHOLDS[1], RETRIEVING_THRESHOLDS[1], OBLIVION_THRESHOLDS[1], DYNAMICS[0],
-				AMOUNT_OF_GOALS[0] * ENVIRONMENT_PROPORTION[0] / MEMORY_PROPORTION[2]);
+		final int ENVIRONMENT_SIZE = AMOUNT_OF_GOALS[0] * ENVIRONMENT_PROPORTION[0];
+		final int MEMORY_SIZE = ENVIRONMENT_SIZE / MEMORY_PROPORTION[0];
+
+		runExperiment(AMOUNT_OF_GOALS[0], ENVIRONMENT_SIZE, RULES_PER_GOAL[0], MEMORY_SIZE, STORING_THRESHOLDS[0],
+				RETRIEVING_THRESHOLDS[0], OBLIVION_THRESHOLDS[0], DYNAMICS[0]);
 	}
 
-	public void repeatExperiment(final Integer AMOUNT_OF_GOALS, final Integer ENVIRONMENT_SIZE,
-			final Integer RULES_PER_GOAL, final Float STORING_THRESHOLD, final Float RETRIEVING_THRESHOLD,
-			final Float OBLIVION_THRESHOLD, final Float DYNAMIC, final Integer MEMORY_SIZE) {
-		// Collection<Agent> agents = new HashSet<>();
-		Arrays.asList(REPETITIONS).parallelStream().forEach(i -> {
-			Environment.prepareEnvironment(AMOUNT_OF_GOALS, ENVIRONMENT_SIZE, RULES_PER_GOAL, STORING_THRESHOLD,
-					RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD, DYNAMIC, MEMORY_SIZE);
+	public void runExperiment(final Integer AMOUNT_OF_GOALS, final Integer ENVIRONMENT_SIZE,
+			final Integer RULES_PER_GOAL, final Integer MEMORY_SIZE, final float STORING_THRESHOLD,
+			final float RETRIEVING_THRESHOLD, final float OBLIVION_THRESHOLD, final float DYNAMICS) {
+		Statistics statistics = new Statistics();
 
+		for (int i = 0; i < REPETITIONS; i++) {
+			Environment.prepareEnvironment(AMOUNT_OF_GOALS, ENVIRONMENT_SIZE, RULES_PER_GOAL, MEMORY_SIZE,
+					STORING_THRESHOLD, RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD, DYNAMICS);
 			Environment.sendPerception();
 
-			// agents.addAll(Environment.agents);
-			Environment.printLogs();
-		});
+			statistics.addResults(Environment.agents);
+
+		}
+
+		statistics.run();
 
 	}
 

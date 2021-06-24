@@ -26,11 +26,13 @@ public class Environment {
 	static Float dynamic = 0F;
 
 	private static void prepareAgents(final float STORING_THRESHOLD, final float RETRIEVING_THRESHOLD,
-			final float OBLIVION_THRESHOLD, final Integer MEMORY_SIZE) {
+			final float OBLIVION_THRESHOLD, final int MEMORY_SIZE) {
+
 		agents.addAll(AgentFactory.buildDefaultAgents());
 		agents.addAll(AgentFactory.buildStoringRetrievingAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD));
 		agents.addAll(AgentFactory.buildForgettingAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD));
 		agents.forEach(a -> a.getBeliefBase().setMemorySize(MEMORY_SIZE));
+
 	}
 
 	private static void prepareBeliefs(final Integer AMOUNT_OF_BELIEFS) {
@@ -67,14 +69,10 @@ public class Environment {
 		});
 	}
 
-	public static void run() {
-
-	}
-
 	public static void sendPerception() {
 		List<Data> perceptionSequence = drawPerceptions();
 		Clock.getInstance();
-		
+
 		agents.parallelStream().forEach(a -> {
 			a.perceive(perceptionSequence);
 		});
@@ -113,23 +111,18 @@ public class Environment {
 		}
 	}
 
-	public static void prepareEnvironment(final Integer AMOUNT_OF_GOALS, final Integer AMOUNT_OF_BELIEFS,
-			final Integer AMOUNT_OF_RULES_PER_GOAL, final float STORING_THRESHOLD, final float RETRIEVING_THRESHOLD,
-			final float OBLIVION_THRESHOLD, float GOALS_DYNAMIC, final Integer MEMORY_SIZE) {
+	public static void prepareEnvironment(final Integer AMOUNT_OF_GOALS, final Integer ENVIRONMENT_SIZE,
+			final Integer AMOUNT_OF_RULES_PER_GOAL, final int MEMORY_SIZE, final float STORING_THRESHOLD,
+			final float RETRIEVING_THRESHOLD, final float OBLIVION_THRESHOLD, float DYNAMICS) {
 		agents.clear();
 		beliefs.clear();
 		goals.clear();
 
 		prepareAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD, MEMORY_SIZE);
-		prepareBeliefs(AMOUNT_OF_BELIEFS);
+		prepareBeliefs(ENVIRONMENT_SIZE);
 		prepareGoals(AMOUNT_OF_GOALS, AMOUNT_OF_RULES_PER_GOAL);
 		preparePlans();
-		dynamic = GOALS_DYNAMIC;
-	}
-
-	public static void dump() {
-		System.out.println("dumping");
-
+		dynamic = DYNAMICS;
 	}
 
 }
