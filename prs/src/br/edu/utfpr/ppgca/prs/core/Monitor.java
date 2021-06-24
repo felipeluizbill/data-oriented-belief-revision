@@ -33,12 +33,6 @@ public class Monitor {
 		System.out.println(this);
 	}
 
-	@Override
-	public String toString() {
-		Log lastLog = logs.get(logs.size() - 1);
-		return "Monitor [agentRef=" + agentRef.getDescriptor() + ", lastLog=" + lastLog + "]";
-	}
-
 	public class Log {
 		public Long operations;
 		public Integer activeBeliefs;
@@ -46,14 +40,10 @@ public class Monitor {
 		public Float utilitySum;
 		public Integer plansRemaining;
 
-		public Float getCpuEfficiency() {
-			float cpuEfficiency = utilitySum * 1_000 / (float) cycles;
-			return Float.isNaN(cpuEfficiency) ? 0 : cpuEfficiency;
-		}
-
-		public Float getMemoryEfficiency() {
-			float memoryEfficiency = utilitySum / (float) activeBeliefs;
-			return Float.isNaN(memoryEfficiency) ? 0 : memoryEfficiency;
+		@Override
+		public String toString() {
+			return "Log [operations=" + operations + ", activeBeliefs=" + activeBeliefs + ", cycles=" + cycles
+					+ ", utilitySum=" + utilitySum + ", plansRemaining=" + plansRemaining + "]";
 		}
 
 	}

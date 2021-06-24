@@ -13,80 +13,86 @@ import br.edu.utfpr.ppgca.prs.core.Monitor.Log;
 
 public class Statistics {
 
-	private Map<String, List<Monitor>> monitors = new HashMap<>();
+	private Map<String, List<Monitor>> monitorsMap = new HashMap<>();
 
 	public void addResults(Collection<Agent> agents) {
 		agents.forEach(a -> {
-			if (!monitors.keySet().contains(a.getDescriptor())) {
-				monitors.put(a.getDescriptor(), new ArrayList<>());
+			if (!monitorsMap.keySet().contains(a.getDescriptor())) {
+				monitorsMap.put(a.getDescriptor(), new ArrayList<>());
 			}
-			monitors.get(a.getDescriptor()).add(a.getMonitor());
+			monitorsMap.get(a.getDescriptor()).add(a.getMonitor());
 		});
 	}
 
 	public void run() {
 		Collection<Result> results = new HashSet<>();
-		for (String descriptor : monitors.keySet()) {
-			System.out.println(descriptor);
-			for (Monitor m : monitors.get(descriptor)) {
-				results.add(processIndividualMonitor(m));
-			}
-			processResults(results);
+
+		List<Monitor> monitorList = monitorsMap.get(monitorsMap.keySet().iterator().next());
+		for (Monitor m : monitorList) {
+			Result result = processIndividualMonitor(m);
+			System.out.println(result);
+			results.add(result);
+
 		}
+		processResults(results);
+
 	}
 
 	private void processResults(Collection<Result> results) {
 		Result result = new Result();
 
 		for (Result r : results) {
-			result.meanMemoryEfficiency += r.meanMemoryEfficiency;
-			result.meanCpuEfficiency += r.meanCpuEfficiency;
-
-			if (r.maxCpuEfficiency > result.maxCpuEfficiency) {
-				result.maxCpuEfficiency = r.maxCpuEfficiency;
-			}
-
-			if (r.maxMemoryEfficiency > result.maxMemoryEfficiency) {
-				result.maxMemoryEfficiency = r.maxMemoryEfficiency;
-			}
+			result.amountOfLogs++;
+			result.cyclesSum += r.getCyclesMean();
+			result.activeBeliefSum += r.getActiveBeliefsMean();
+			result.utilitySum += r.getUtilitySumMean();
 		}
 
-		result.meanMemoryEfficiency /= (float) results.size();
-		result.meanCpuEfficiency /= (float) results.size();
-
-		System.out.println("maxMem = " + result.maxMemoryEfficiency + ", meanMem = " + result.meanMemoryEfficiency);
-		System.out.println("maxCpu= " + result.maxCpuEfficiency + ", meanCpu= " + result.meanCpuEfficiency);
-
+		System.out.println(result);
 	}
 
 	private Result processIndividualMonitor(Monitor monitor) {
 		Result result = new Result();
 
 		for (Log log : monitor.getLogs()) {
-			result.meanMemoryEfficiency += log.getMemoryEfficiency();
-			result.meanCpuEfficiency += log.getCpuEfficiency();
-
-			if (log.getMemoryEfficiency() > result.maxMemoryEfficiency) {
-				result.maxMemoryEfficiency = log.getMemoryEfficiency();
-			}
-
-			if (log.getCpuEfficiency() > result.maxCpuEfficiency) {
-				result.maxCpuEfficiency = log.getCpuEfficiency();
-			}
+			result.amountOfLogs++;
+			result.cyclesSum += log.cycles;
+			result.operationsSum += log.operations;
+			result.utilitySum += log.utilitySum;
+			result.activeBeliefSum += log.activeBeliefs;
 		}
-
-		result.meanMemoryEfficiency /= (float) monitor.getLogs().size();
-		result.meanCpuEfficiency /= (float) monitor.getLogs().size();
-
 		return result;
 	}
 
 	public class Result {
-		public Float maxMemoryEfficiency = Float.MIN_VALUE;
-		public Float meanMemoryEfficiency = 0F;
+		public Integer amountOfLogs = 0;
+		public Float activeBeliefSum = 0F;
+		public Float cyclesSum = 0F;
+		public Float operationsSum = 0F;
+		public Float utilitySum = 0F;
 
-		public Float maxCpuEfficiency = Float.MIN_VALUE;
-		public Float meanCpuEfficiency = 0F;
+		public Float getCyclesMean() {
+			return (float) (this.cyclesSum / this.amountOfLogs);
+		}
+
+		public Float getOperationsMean() {
+			return (float) (this.operationsSum / this.amountOfLogs);
+		}
+
+		public Float getUtilitySumMean() {
+			return this.utilitySum / this.amountOfLogs;
+		}
+
+		public Float getActiveBeliefsMean() {
+			return (float) (this.activeBeliefSum / this.amountOfLogs);
+		}
+
+		@Override
+		public String toString() {
+			return "Result [getCyclesMean()=" + getCyclesMean() + ", getOperationsMean()=" + getOperationsMean()
+					+ ", getUtilitySumMean()=" + getUtilitySumMean() + ", getActiveBeliefsMean()="
+					+ getActiveBeliefsMean() + "]";
+		}
 
 	}
 }
