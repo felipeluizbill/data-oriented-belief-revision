@@ -82,7 +82,7 @@ public class Environment {
 
 	public static List<Data> drawPerceptions() {
 		List<Data> perceptionSequence = new ArrayList<>();
-		for (int i = 0; i < beliefs.size(); i++) {
+		for (int i = 0; i < beliefs.size() * 10; i++) {
 			int randomInt = Util.getInstance().randomInt(beliefs.size());
 			perceptionSequence.add(beliefs.get(randomInt).getData());
 		}

@@ -24,31 +24,38 @@ public class Statistics {
 		});
 	}
 
-	public void run() {
+	public void run(String scenarioDescriptor) {
 		Collection<Result> results = new HashSet<>();
 
-		List<Monitor> monitorList = monitorsMap.get(monitorsMap.keySet().iterator().next());
-		for (Monitor m : monitorList) {
-			Result result = processIndividualMonitor(m);
-			System.out.println(result);
-			results.add(result);
+		for (String descriptor : monitorsMap.keySet()) {
+			List<Monitor> monitorList = monitorsMap.get(descriptor);
+			for (Monitor m : monitorList) {
+				Result result = processIndividualMonitor(m);
+				results.add(result);
+			}
+			System.out.print(descriptor);
+			processResults(results , scenarioDescriptor);
 
 		}
-		processResults(results);
 
 	}
 
-	private void processResults(Collection<Result> results) {
+	private void processResults(Collection<Result> results, String scenarioDescriptor) {
 		Result result = new Result();
 
 		for (Result r : results) {
 			result.amountOfLogs++;
+
 			result.cyclesSum += r.getCyclesMean();
+
 			result.activeBeliefSum += r.getActiveBeliefsMean();
+
+			result.operationsSum += r.getOperationsMean();
+
 			result.utilitySum += r.getUtilitySumMean();
 		}
 
-		System.out.println(result);
+		System.out.println(result + " ; " + scenarioDescriptor);
 	}
 
 	private Result processIndividualMonitor(Monitor monitor) {
@@ -61,15 +68,16 @@ public class Statistics {
 			result.utilitySum += log.utilitySum;
 			result.activeBeliefSum += log.activeBeliefs;
 		}
+
 		return result;
 	}
 
 	public class Result {
-		public Integer amountOfLogs = 0;
-		public Float activeBeliefSum = 0F;
-		public Float cyclesSum = 0F;
-		public Float operationsSum = 0F;
-		public Float utilitySum = 0F;
+		Integer amountOfLogs = 0;
+		Float activeBeliefSum = 0F;
+		Float cyclesSum = 0F;
+		Float operationsSum = 0F;
+		Float utilitySum = 0F;
 
 		public Float getCyclesMean() {
 			return (float) (this.cyclesSum / this.amountOfLogs);
@@ -89,9 +97,10 @@ public class Statistics {
 
 		@Override
 		public String toString() {
-			return "Result [getCyclesMean()=" + getCyclesMean() + ", getOperationsMean()=" + getOperationsMean()
-					+ ", getUtilitySumMean()=" + getUtilitySumMean() + ", getActiveBeliefsMean()="
-					+ getActiveBeliefsMean() + "]";
+			return "; " + String.valueOf(getCyclesMean()).replace(".", ",") + " ; "
+					+ String.valueOf(getActiveBeliefsMean()).replace(".", ",") + " ; "
+					+ String.valueOf(getOperationsMean()).replace(".", ",") + " ; "
+					+ String.valueOf(getUtilitySumMean()).replace(".", ",");
 		}
 
 	}
