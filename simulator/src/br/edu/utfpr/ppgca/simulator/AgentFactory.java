@@ -131,9 +131,6 @@ public class AgentFactory {
 
 	private static Set<Agent> prepareAgents(final float STORING_THRESHOLD, final float RETRIEVING_THRESHOLD,
 			final float OBLIVION_THRESHOLD) {
-		
-		System.out.println(STORING_THRESHOLD + " - " + RETRIEVING_THRESHOLD + " - " + OBLIVION_THRESHOLD);
-		
 		Set<Agent> agents = new HashSet<>();
 		agents.addAll(AgentFactory.buildDefaultAgents());
 		agents.addAll(AgentFactory.buildStoringRetrievingAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD));

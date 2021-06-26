@@ -1,5 +1,7 @@
 package br.edu.utfpr.ppgca.simulator;
 
+import java.io.IOException;
+
 import org.junit.Test;
 
 public class ExperimentSuite {
@@ -11,7 +13,7 @@ public class ExperimentSuite {
 	private final Integer PERCEPTION_SEQUENCE_FACTOR = 4;
 
 	@Test
-	public void run() {
+	public void run() throws IOException {
 		Scenario scenario = new Scenario(AMOUNT_OF_GOALS, ENVIRONMENT_SIZE, AMOUNT_OF_RULES_PER_GOAL,
 				PERCEPTION_SEQUENCE_FACTOR);
 
