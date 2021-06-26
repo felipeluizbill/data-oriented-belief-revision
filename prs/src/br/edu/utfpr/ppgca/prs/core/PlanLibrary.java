@@ -12,6 +12,10 @@ public class PlanLibrary {
 
 	Collection<Goal> goals = new HashSet<>();
 
+	public void addGoal(final Collection<Goal> goals) {
+		goals.forEach(g -> addGoal(g));
+	}
+
 	public void addGoal(final Goal goal) {
 		if (this.goals.contains(goal)) {
 			return;

@@ -11,8 +11,6 @@ public abstract class AbstractBeliefBase {
 
 	protected Agent agentRef;
 
-	protected Integer memorySize;
-
 	public void setAgentRef(final Agent agentRef) {
 		this.agentRef = agentRef;
 	}
@@ -27,10 +25,6 @@ public abstract class AbstractBeliefBase {
 
 	public Long getOperations() {
 		return this.operations;
-	}
-
-	public void setMemorySize(final Integer MEMORY_SIZE) {
-		this.memorySize = MEMORY_SIZE;
 	}
 
 }
