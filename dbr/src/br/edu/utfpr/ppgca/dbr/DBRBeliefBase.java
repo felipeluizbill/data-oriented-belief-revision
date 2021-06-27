@@ -45,10 +45,6 @@ public class DBRBeliefBase extends AbstractBeliefBase {
 	}
 
 	public void beliefRevision() {
-		if (this.beliefLayer.active.size() < memorySize) {
-			return;
-		}
-
 		Relevance.update(beliefLayer, agentRef.getPlanLibrary(), parameters.getRelevanceModel());
 		Collection<DBRBelief> storedBeliefs = beliefLayer.store(parameters.getStoreThreshold());
 		storedBeliefs.forEach(b -> {

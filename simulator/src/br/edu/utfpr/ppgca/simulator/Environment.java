@@ -1,14 +1,11 @@
 package br.edu.utfpr.ppgca.simulator;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import br.edu.utfpr.ppgca.prs.core.Agent;
-import br.edu.utfpr.ppgca.prs.core.Clock;
 import br.edu.utfpr.ppgca.prs.entities.Belief;
 import br.edu.utfpr.ppgca.prs.entities.Data;
 import br.edu.utfpr.ppgca.prs.entities.Goal;
@@ -19,29 +16,42 @@ import br.edu.utfpr.ppgca.prs.knowledge.MotivatingRule;
 
 public class Environment {
 
-	static Collection<Agent> agents = new HashSet<>();
-	static List<Belief> beliefs = new ArrayList<>();
-	static Set<Goal> goals = new HashSet<>();
+	private List<Belief> beliefs = new ArrayList<>();
+	private Set<Goal> goals = new HashSet<>();
+	private List<Data> perceptionSequence = new ArrayList<>();
 
-	static Float dynamic = 0F;
+	private Float DYNAMICS = 0F;
 
-	private static void prepareAgents(final float STORING_THRESHOLD, final float RETRIEVING_THRESHOLD,
-			final float OBLIVION_THRESHOLD, final int MEMORY_SIZE) {
-
-		agents.addAll(AgentFactory.buildDefaultAgents());
-		agents.addAll(AgentFactory.buildStoringRetrievingAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD));
-		agents.addAll(AgentFactory.buildForgettingAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD));
-		agents.forEach(a -> a.getBeliefBase().setMemorySize(MEMORY_SIZE));
-
+	public Environment(final Integer AMOUNT_OF_GOALS, final Integer ENVIRONMENT_SIZE,
+			final Integer AMOUNT_OF_RULES_PER_GOAL, final Integer PERCEPTION_SEQUENCE_FACTOR) {
+		prepareBeliefs(ENVIRONMENT_SIZE);
+		prepareGoals(AMOUNT_OF_GOALS, AMOUNT_OF_RULES_PER_GOAL);
+		drawPerceptions(PERCEPTION_SEQUENCE_FACTOR);
 	}
 
-	private static void prepareBeliefs(final Integer AMOUNT_OF_BELIEFS) {
+	public Environment(final Integer AMOUNT_OF_GOALS, final Integer ENVIRONMENT_SIZE,
+			final Integer AMOUNT_OF_RULES_PER_GOAL, final Integer PERCEPTION_SEQUENCE_FACTOR, final Float DYNAMICS) {
+		this.DYNAMICS = DYNAMICS;
+		prepareBeliefs(ENVIRONMENT_SIZE);
+		prepareGoals(AMOUNT_OF_GOALS, AMOUNT_OF_RULES_PER_GOAL);
+		drawPerceptions(PERCEPTION_SEQUENCE_FACTOR);
+	}
+
+	public List<Data> getPerceptionSequence() {
+		return new ArrayList<Data>(this.perceptionSequence);
+	}
+
+	public Set<Goal> getGoals() {
+		return new HashSet<>(this.goals);
+	}
+
+	private void prepareBeliefs(final Integer AMOUNT_OF_BELIEFS) {
 		for (int i = 0; i < AMOUNT_OF_BELIEFS; i++) {
-			beliefs.add(new Belief(new Data(Util.getInstance().nextInt())));
+			this.beliefs.add(new Belief(new Data(Util.getInstance().nextInt())));
 		}
 	}
 
-	private static void prepareGoals(final Integer AMOUNT_OF_GOALS, final Integer AMOUNT_OF_RULES_PER_GOAL) {
+	private void prepareGoals(final Integer AMOUNT_OF_GOALS, final Integer AMOUNT_OF_RULES_PER_GOAL) {
 		for (int i = 0; i < AMOUNT_OF_GOALS; i++) {
 			Goal goal = new Goal(Util.getInstance().randomString(), Util.getInstance().randomFloat());
 			for (int j = 0; j < AMOUNT_OF_RULES_PER_GOAL; j++) {
@@ -61,68 +71,42 @@ public class Environment {
 		}
 	}
 
-	private static void preparePlans() {
-		agents.forEach(a -> {
-			goals.forEach(g -> {
-				a.getPlanLibrary().addGoal(g);
-			});
-		});
-	}
-
-	public static void sendPerception() {
-		List<Data> perceptionSequence = drawPerceptions();
-		Clock.getInstance();
-
-		agents.parallelStream().forEach(a -> {
-			a.perceive(perceptionSequence);
-		});
-
-		Environment.updateGoals();
-	}
-
-	public static List<Data> drawPerceptions() {
-		List<Data> perceptionSequence = new ArrayList<>();
-		for (int i = 0; i < beliefs.size() * 10; i++) {
+	private void drawPerceptions(final Integer PERCEPTION_SEQUENCE_FACTOR) {
+		for (int i = 0; i < beliefs.size() * PERCEPTION_SEQUENCE_FACTOR; i++) {
 			int randomInt = Util.getInstance().randomInt(beliefs.size());
-			perceptionSequence.add(beliefs.get(randomInt).getData());
+			this.perceptionSequence.add(beliefs.get(randomInt).getData());
 		}
-		return perceptionSequence;
 	}
 
-	public static void printLogs() {
-		agents.forEach(a -> a.getMonitor().printLog());
-	}
-
-	public static void updateGoals() {
+	public void updateGoals() {
 		Random random = new Random();
 		float nextFloat = random.nextFloat();
-		if (nextFloat < dynamic) {
-			for (Goal g : goals) {
-				nextFloat = random.nextFloat();
-				if (nextFloat < dynamic) {
-					nextFloat = random.nextFloat();
-					if (nextFloat >= 0.5F) {
-						g.setUtility(g.getUtility() * (float) (1 + dynamic));
-					} else {
-						g.setUtility(g.getUtility() * (float) (1 - dynamic));
-					}
-				}
+		final float GOALS_TO_UPDATE = goals.size() / DYNAMICS;
+		List<Goal> goalsList = new ArrayList<>(this.goals);
+		if (nextFloat < DYNAMICS) {
+			for (int i = 0; i < goals.size() / 10; i++) {
+				int nextInt = random.nextInt(goalsList.size() - 1);
+				goalsList.get(nextInt).setUtility(goalsList.get(nextInt).getUtility() * (float) (1 + DYNAMICS));
 			}
 		}
 	}
 
-	public static void prepareEnvironment(final Integer AMOUNT_OF_GOALS, final Integer ENVIRONMENT_SIZE,
-			final Integer AMOUNT_OF_RULES_PER_GOAL, final int MEMORY_SIZE, final float STORING_THRESHOLD,
-			final float RETRIEVING_THRESHOLD, final float OBLIVION_THRESHOLD, float DYNAMICS) {
-		agents.clear();
-		beliefs.clear();
-		goals.clear();
-
-		prepareAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD, MEMORY_SIZE);
-		prepareBeliefs(ENVIRONMENT_SIZE);
-		prepareGoals(AMOUNT_OF_GOALS, AMOUNT_OF_RULES_PER_GOAL);
-		preparePlans();
-		dynamic = DYNAMICS;
-	}
+//	public static void updateGoals() {
+//		Random random = new Random();
+//		float nextFloat = random.nextFloat();
+//		if (nextFloat < dynamic) {
+//			for (Goal g : goals) {
+//				nextFloat = random.nextFloat();
+//				if (nextFloat < dynamic) {
+//					nextFloat = random.nextFloat();
+//					if (nextFloat >= 0.5F) {
+//						g.setUtility(g.getUtility() * (float) (1 + dynamic));
+//					} else {
+//						g.setUtility(g.getUtility() * (float) (1 - dynamic));
+//					}
+//				}
+//			}
+//		}
+//	}
 
 }
