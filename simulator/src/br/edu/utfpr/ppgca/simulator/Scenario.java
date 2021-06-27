@@ -9,25 +9,31 @@ import br.edu.utfpr.ppgca.simulator.Statistics.Result;
 
 public class Scenario {
 
-	private Environment environment;
-	private List<Agent> agents = new ArrayList<>();
+	protected static Environment environment;
+	protected static List<Agent> agents = new ArrayList<>();
 
 	public Scenario(Integer AMOUNT_OF_GOALS, Integer ENVIRONMENT_SIZE, Integer AMOUNT_OF_RULES_PER_GOAL,
-			Integer PERCEPTION_SEQUENCE_FACTOR) throws IOException {
+			Integer PERCEPTION_SEQUENCE_FACTOR, final Float DYNAMICS) throws IOException {
 
-		this.environment = new Environment(AMOUNT_OF_GOALS, ENVIRONMENT_SIZE, AMOUNT_OF_RULES_PER_GOAL,
-				PERCEPTION_SEQUENCE_FACTOR);
+		environment = new Environment(AMOUNT_OF_GOALS, ENVIRONMENT_SIZE, AMOUNT_OF_RULES_PER_GOAL,
+				PERCEPTION_SEQUENCE_FACTOR, DYNAMICS);
 		agents.addAll(AgentFactory.build(environment.getGoals()));
 
-		for (int i = 0; i < agents.size(); i++) {
-			Agent agent = agents.get(i);
-			agent.perceive(environment.getPerceptionSequence());
-			Result result = Statistics.getInstance().processMonitor(agent);
-			FileUtil.getInstance().save(String.valueOf(i),
-					agent.getDescriptor().concat(" ; ").concat(result.toString()));
-			System.out.println("[" + i + "/" + agents.size() + "]");
-		}
+		agents.parallelStream().forEach(a -> {
+			int indexOf = agents.indexOf(a);
+			a.perceive(environment.getPerceptionSequence());
+			environment.updateGoals();
+			Result result = Statistics.getInstance().processMonitor(a);
+			try {
+				FileUtil.getInstance().save(String.valueOf(indexOf),
+						a.getDescriptor().concat(" ; ").concat(result.toString()));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("[" + indexOf + "/" + agents.size() + "]");
 
+		});
 	}
 
 }

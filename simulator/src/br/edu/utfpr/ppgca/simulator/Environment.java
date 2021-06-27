@@ -3,6 +3,7 @@ package br.edu.utfpr.ppgca.simulator;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import br.edu.utfpr.ppgca.prs.entities.Belief;
@@ -19,8 +20,18 @@ public class Environment {
 	private Set<Goal> goals = new HashSet<>();
 	private List<Data> perceptionSequence = new ArrayList<>();
 
+	private Float DYNAMICS = 0F;
+
 	public Environment(final Integer AMOUNT_OF_GOALS, final Integer ENVIRONMENT_SIZE,
 			final Integer AMOUNT_OF_RULES_PER_GOAL, final Integer PERCEPTION_SEQUENCE_FACTOR) {
+		prepareBeliefs(ENVIRONMENT_SIZE);
+		prepareGoals(AMOUNT_OF_GOALS, AMOUNT_OF_RULES_PER_GOAL);
+		drawPerceptions(PERCEPTION_SEQUENCE_FACTOR);
+	}
+
+	public Environment(final Integer AMOUNT_OF_GOALS, final Integer ENVIRONMENT_SIZE,
+			final Integer AMOUNT_OF_RULES_PER_GOAL, final Integer PERCEPTION_SEQUENCE_FACTOR, final Float DYNAMICS) {
+		this.DYNAMICS = DYNAMICS;
 		prepareBeliefs(ENVIRONMENT_SIZE);
 		prepareGoals(AMOUNT_OF_GOALS, AMOUNT_OF_RULES_PER_GOAL);
 		drawPerceptions(PERCEPTION_SEQUENCE_FACTOR);
@@ -64,6 +75,19 @@ public class Environment {
 		for (int i = 0; i < beliefs.size() * PERCEPTION_SEQUENCE_FACTOR; i++) {
 			int randomInt = Util.getInstance().randomInt(beliefs.size());
 			this.perceptionSequence.add(beliefs.get(randomInt).getData());
+		}
+	}
+
+	public void updateGoals() {
+		Random random = new Random();
+		float nextFloat = random.nextFloat();
+		final float GOALS_TO_UPDATE = goals.size() / DYNAMICS;
+		List<Goal> goalsList = new ArrayList<>(this.goals);
+		if (nextFloat < DYNAMICS) {
+			for (int i = 0; i < goals.size() / 10; i++) {
+				int nextInt = random.nextInt(goalsList.size() - 1);
+				goalsList.get(nextInt).setUtility(goalsList.get(nextInt).getUtility() * (float) (1 + DYNAMICS));
+			}
 		}
 	}
 
