@@ -80,33 +80,24 @@ public class Environment {
 
 	public void updateGoals() {
 		Random random = new Random();
-		float nextFloat = random.nextFloat();
-		final float GOALS_TO_UPDATE = goals.size() / DYNAMICS;
 		List<Goal> goalsList = new ArrayList<>(this.goals);
-		if (nextFloat < DYNAMICS) {
-			for (int i = 0; i < goals.size() / 10; i++) {
-				int nextInt = random.nextInt(goalsList.size() - 1);
-				goalsList.get(nextInt).setUtility(goalsList.get(nextInt).getUtility() * (float) (1 + DYNAMICS));
+		for (Goal goal : goalsList) {
+			float nextFloat = random.nextFloat();
+			if(nextFloat < (DYNAMICS /100)) {//a cada 1 dos 4000 ciclos vai atualizar 1000*0,1/4000 objetivos = 0,1 , esperado = 400
+				if(random.nextFloat() > 0.5F) {//increase
+					System.out.print(goal.getUtility());
+					goal.setUtility(goal.getUtility() * (float) (1 + DYNAMICS));					
+					System.out.print("aumentou" + goal.getUtility());
+				}else {//decrease
+					System.out.print(goal.getUtility());
+					goal.setUtility(goal.getUtility() * (float) (1 - DYNAMICS));										
+					System.out.print("diminuiu" + goal.getUtility());
+				}
 			}
 		}
+		
 	}
-
-//	public static void updateGoals() {
-//		Random random = new Random();
-//		float nextFloat = random.nextFloat();
-//		if (nextFloat < dynamic) {
-//			for (Goal g : goals) {
-//				nextFloat = random.nextFloat();
-//				if (nextFloat < dynamic) {
-//					nextFloat = random.nextFloat();
-//					if (nextFloat >= 0.5F) {
-//						g.setUtility(g.getUtility() * (float) (1 + dynamic));
-//					} else {
-//						g.setUtility(g.getUtility() * (float) (1 - dynamic));
-//					}
-//				}
-//			}
-//		}
-//	}
+	
+	
 
 }

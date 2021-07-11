@@ -12,12 +12,12 @@ public class IntegratedRelevanceModel extends AbstractRelevanceModel {
 	public Float compute(Data data, Collection<Goal> supportingGoals) {
 		Float utilitySum = utilitySum(supportingGoals);
 		Float age = getAge(data);
-		return  utilitySum * age ;
+		return utilitySum * age;
 	}
 
 	protected Float utilitySum(Collection<Goal> supportingGoals) {
 		Float relevanceValue = 0f;
-		for (Goal goal : supportingGoals) {			
+		for (Goal goal : supportingGoals) {
 			relevanceValue += goal.utility * goalInertia(goal);
 		}
 		return relevanceValue;
