@@ -18,16 +18,16 @@ public class ExperimentSuite {
 
 	public static void main(String[] args) throws IOException {
 //
-		FileUtil.getInstance().mergeFiles("E:\\finalResults\\dynamics2");
 
-//		for (int i = 0; i < REPETITIONS; i++) {
-//			FileUtil.getInstance().clear();
-//			Scenario scenario = new Scenario(AMOUNT_OF_GOALS, ENVIRONMENT_SIZE, AMOUNT_OF_RULES_PER_GOAL,
-//					PERCEPTION_SEQUENCE_FACTOR, DYNAMICS);
-//			scenario.run();
-//			FileUtil.getInstance().mergeFiles();
-//		}
+		for (int i = 0; i < REPETITIONS; i++) {
+			FileUtil.getInstance().clear();
+			Scenario scenario = new Scenario(AMOUNT_OF_GOALS, ENVIRONMENT_SIZE, AMOUNT_OF_RULES_PER_GOAL,
+					PERCEPTION_SEQUENCE_FACTOR, DYNAMICS);
+			scenario.run();
+			FileUtil.getInstance().mergeFiles();
+		}
 
+//		FileUtil.getInstance().mergeFiles("E:\\finalResults\\dynamics2");
 		
 		
 	}
