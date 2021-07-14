@@ -59,7 +59,7 @@ public class Statistics {
 		}
 
 		public Float getCpuEfficiency() {
-			return (float) getUtilitySumMean()*100 / (getCyclesMean() + (getOperationsMean() * 10));
+			return (float) getUtilitySumMean() * 100 / (getCyclesMean() + (getOperationsMean() * 10));
 		}
 
 		@Override

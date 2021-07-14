@@ -20,8 +20,26 @@ public class Agent {
 
 	List<Event> events = new ArrayList<Event>();
 
+	String descriptor;
+
+	public void setDescriptor(Float... parameters) {
+		if (parameters == null || parameters.length == 0) {
+			this.descriptor = beliefBase.getDescriptor().concat(" ; ").concat(engine.getDescriptor());
+			return;
+		}
+
+		StringBuilder parametersDescriptor = new StringBuilder();
+
+		for (Float p : parameters) {
+			parametersDescriptor.append(p).append(" ; ");
+		}
+
+		this.descriptor = beliefBase.getDescriptor().concat(" ; ").concat(engine.getDescriptor()).concat(" ; ")
+				.concat(parametersDescriptor.toString());
+	}
+
 	public String getDescriptor() {
-		return beliefBase.getDescriptor().concat(" ; ").concat(engine.getDescriptor());
+		return this.descriptor;
 	}
 
 	public void setBeliefBase(AbstractBeliefBase beliefBase) {

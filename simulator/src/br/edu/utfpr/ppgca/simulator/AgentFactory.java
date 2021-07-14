@@ -126,6 +126,7 @@ public class AgentFactory {
 				OBLIVION_THRESHOLD, new BDIIntegratedRelevanceModel()))));
 		agents.add(buildBBGPAgent(buildBeliefBase(buildForgettingParameters(STORING_THRESHOLD, RETRIEVING_THRESHOLD,
 				OBLIVION_THRESHOLD, new BBGPIntegratedRelevanceModel()))));
+
 		return agents;
 	}
 
@@ -135,6 +136,9 @@ public class AgentFactory {
 		agents.addAll(AgentFactory.buildDefaultAgents());
 		agents.addAll(AgentFactory.buildStoringRetrievingAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD));
 		agents.addAll(AgentFactory.buildForgettingAgents(STORING_THRESHOLD, RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD));
+
+		agents.forEach(a -> a.setDescriptor(STORING_THRESHOLD, RETRIEVING_THRESHOLD, OBLIVION_THRESHOLD));
+
 		return agents;
 	}
 
@@ -152,4 +156,319 @@ public class AgentFactory {
 		return agents;
 	}
 
+	public static Set<Agent> buildOptRules3(Set<Goal> goals) {
+		Set<Agent> agents = new HashSet<>();
+
+		// SOAR-DEFAULT
+		agents.add(buildSOARAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildSOARAgent(buildBeliefBase(buildDefaultParameters(new SOARIntegratedRelevanceModel()))));
+		// SOAR-STORING_RETRIEVING
+		agents.add(buildSOARAgent(buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.4F))));
+		agents.add(buildSOARAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.4F, new SOARIntegratedRelevanceModel()))));
+		// SOAR-FORGETTING
+		agents.add(buildSOARAgent(buildBeliefBase(buildForgettingParameters(0.2F, 0.4F, 0.4F))));
+		agents.add(buildSOARAgent(
+				buildBeliefBase(buildForgettingParameters(0.8F, 0.6F, 0.6F, new SOARIntegratedRelevanceModel()))));
+
+		// BDI_DEFAULT
+		agents.add(buildBDIAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildBDIAgent(buildBeliefBase(buildDefaultParameters(new BDIIntegratedRelevanceModel()))));
+		// BDI_STORING
+		agents.add(buildBDIAgent(buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.4F))));
+		agents.add(buildBDIAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.6F, new BDIIntegratedRelevanceModel()))));
+		// BDI_FORGETTING
+		agents.add(buildBDIAgent(buildBeliefBase(buildForgettingParameters(0.6F, 0.4F, 0.2F))));
+		agents.add(buildBDIAgent(
+				buildBeliefBase(buildForgettingParameters(0.2F, 0.4F, 0.6F, new BDIIntegratedRelevanceModel()))));
+
+		// BBGP_DEFAULT
+		agents.add(buildBBGPAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildBBGPAgent(buildBeliefBase(buildDefaultParameters(new BBGPIntegratedRelevanceModel()))));
+		// BBGP_STORING
+		agents.add(buildBBGPAgent(buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.4F))));
+		agents.add(buildBBGPAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.6F, new BBGPIntegratedRelevanceModel()))));
+		// BBGP_FORGETTING
+		agents.add(buildBBGPAgent(buildBeliefBase(buildForgettingParameters(0.6F, 0.6F, 0.6F))));
+		agents.add(buildBBGPAgent(
+				buildBeliefBase(buildForgettingParameters(0.4F, 0.8F, 0.8F, new BBGPIntegratedRelevanceModel()))));
+
+		agents.forEach(a -> a.setDescriptor(0F, 0F, 0F));
+		
+		agents.forEach(a -> a.getPlanLibrary().addGoal(goals));
+		return agents;
+	}
+	
+//	public static Set<Agent> buildOptRules4(Set<Goal> goals) {
+//		Set<Agent> agents = new HashSet<>();
+//
+//		// SOAR-DEFAULT
+//		agents.add(buildSOARAgent(buildBeliefBase(buildDefaultParameters())));
+//		agents.add(buildSOARAgent(buildBeliefBase(buildDefaultParameters(new SOARIntegratedRelevanceModel()))));
+//		// SOAR-STORING_RETRIEVING
+//		agents.add(buildSOARAgent(buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.4F))));
+//		agents.add(buildSOARAgent(
+//				buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.4F, new SOARIntegratedRelevanceModel()))));
+//		// SOAR-FORGETTING
+//		agents.add(buildSOARAgent(buildBeliefBase(buildForgettingParameters(0.2F, 0.8F, 0.8F))));
+//		agents.add(buildSOARAgent(
+//				buildBeliefBase(buildForgettingParameters(0.2F, 0.2F, 0.6F, new SOARIntegratedRelevanceModel()))));
+//
+//		// BDI_DEFAULT
+//		agents.add(buildBDIAgent(buildBeliefBase(buildDefaultParameters())));
+//		agents.add(buildBDIAgent(buildBeliefBase(buildDefaultParameters(new BDIIntegratedRelevanceModel()))));
+//		// BDI_STORING
+//		agents.add(buildBDIAgent(buildBeliefBase(buildStoringRetrievingParameters(0.8F, 0.2F))));
+//		agents.add(buildBDIAgent(
+//				buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.6F, new BDIIntegratedRelevanceModel()))));
+//		// BDI_FORGETTING
+//		agents.add(buildBDIAgent(buildBeliefBase(buildForgettingParameters(0.4F, 0.6F, 0.2F))));
+//		agents.add(buildBDIAgent(
+//				buildBeliefBase(buildForgettingParameters(0.8F, 0.2F, 0.4F, new BDIIntegratedRelevanceModel()))));
+//
+//		// BBGP_DEFAULT
+//		agents.add(buildBBGPAgent(buildBeliefBase(buildDefaultParameters())));
+//		agents.add(buildBBGPAgent(buildBeliefBase(buildDefaultParameters(new BBGPIntegratedRelevanceModel()))));
+//		// BBGP_STORING
+//		agents.add(buildBBGPAgent(buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.4F))));
+//		agents.add(buildBBGPAgent(
+//				buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.6F, new BBGPIntegratedRelevanceModel()))));
+//		// BBGP_FORGETTING
+//		agents.add(buildBBGPAgent(buildBeliefBase(buildForgettingParameters(0.2F, 0.4F, 0.2F))));
+//		agents.add(buildBBGPAgent(
+//				buildBeliefBase(buildForgettingParameters(0.2F, 0.8F, 0.8F, new BBGPIntegratedRelevanceModel()))));
+//
+//		agents.forEach(a -> a.setDescriptor(0F, 0F, 0F));
+//		
+//		agents.forEach(a -> a.getPlanLibrary().addGoal(goals));
+//		return agents;
+//	}
+	
+	public static Set<Agent> buildOptRules5(Set<Goal> goals) {
+		Set<Agent> agents = new HashSet<>();
+
+		// SOAR-DEFAULT
+		agents.add(buildSOARAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildSOARAgent(buildBeliefBase(buildDefaultParameters(new SOARIntegratedRelevanceModel()))));
+		// SOAR-STORING_RETRIEVING
+		agents.add(buildSOARAgent(buildBeliefBase(buildStoringRetrievingParameters(0.2F, 0.2F))));
+		agents.add(buildSOARAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.2F, 0.2F, new SOARIntegratedRelevanceModel()))));
+		// SOAR-FORGETTING
+		agents.add(buildSOARAgent(buildBeliefBase(buildForgettingParameters(0.2F, 0.6F, 0.2F))));
+		agents.add(buildSOARAgent(
+				buildBeliefBase(buildForgettingParameters(0.2F, 0.4F, 0.6F, new SOARIntegratedRelevanceModel()))));
+
+		// BDI_DEFAULT
+		agents.add(buildBDIAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildBDIAgent(buildBeliefBase(buildDefaultParameters(new BDIIntegratedRelevanceModel()))));
+		// BDI_STORING
+		agents.add(buildBDIAgent(buildBeliefBase(buildStoringRetrievingParameters(0.8F, 0.8F))));
+		agents.add(buildBDIAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.6F, 0.6F, new BDIIntegratedRelevanceModel()))));
+		// BDI_FORGETTING
+		agents.add(buildBDIAgent(buildBeliefBase(buildForgettingParameters(0.4F, 0.6F, 0.2F))));
+		agents.add(buildBDIAgent(
+				buildBeliefBase(buildForgettingParameters(0.2F, 0.2F, 0.2F, new BDIIntegratedRelevanceModel()))));
+
+		// BBGP_DEFAULT
+		agents.add(buildBBGPAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildBBGPAgent(buildBeliefBase(buildDefaultParameters(new BBGPIntegratedRelevanceModel()))));
+		// BBGP_STORING
+		agents.add(buildBBGPAgent(buildBeliefBase(buildStoringRetrievingParameters(0.2F, 0.2F))));
+		agents.add(buildBBGPAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.4F, new BBGPIntegratedRelevanceModel()))));
+		// BBGP_FORGETTING
+		agents.add(buildBBGPAgent(buildBeliefBase(buildForgettingParameters(0.2F, 0.2F, 0.4F))));
+		agents.add(buildBBGPAgent(
+				buildBeliefBase(buildForgettingParameters(0.2F, 0.8F, 0.4F, new BBGPIntegratedRelevanceModel()))));
+
+		agents.forEach(a -> a.setDescriptor(0F, 0F, 0F));
+		
+		agents.forEach(a -> a.getPlanLibrary().addGoal(goals));
+		return agents;
+	}
+	
+	public static Set<Agent> buildOpt50x1000(Set<Goal> goals) {
+		Set<Agent> agents = new HashSet<>();
+
+		// SOAR-DEFAULT
+		agents.add(buildSOARAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildSOARAgent(buildBeliefBase(buildDefaultParameters(new SOARIntegratedRelevanceModel()))));
+		// SOAR-STORING_RETRIEVING
+		agents.add(buildSOARAgent(buildBeliefBase(buildStoringRetrievingParameters(0.2F, 0.2F))));
+		agents.add(buildSOARAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.2F, 0.2F, new SOARIntegratedRelevanceModel()))));
+		// SOAR-FORGETTING
+		agents.add(buildSOARAgent(buildBeliefBase(buildForgettingParameters(0.2F, 0.6F, 0.6F))));
+		agents.add(buildSOARAgent(
+				buildBeliefBase(buildForgettingParameters(0.2F, 0.8F, 0.6F, new SOARIntegratedRelevanceModel()))));
+
+		// BDI_DEFAULT
+		agents.add(buildBDIAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildBDIAgent(buildBeliefBase(buildDefaultParameters(new BDIIntegratedRelevanceModel()))));
+		// BDI_STORING
+		agents.add(buildBDIAgent(buildBeliefBase(buildStoringRetrievingParameters(0.8F, 0.6F))));
+		agents.add(buildBDIAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.6F, 0.6F, new BDIIntegratedRelevanceModel()))));
+		// BDI_FORGETTING
+		agents.add(buildBDIAgent(buildBeliefBase(buildForgettingParameters(0.4F, 0.6F, 0.2F))));
+		agents.add(buildBDIAgent(
+				buildBeliefBase(buildForgettingParameters(0.8F, 0.4F, 0.4F, new BDIIntegratedRelevanceModel()))));
+
+		// BBGP_DEFAULT
+		agents.add(buildBBGPAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildBBGPAgent(buildBeliefBase(buildDefaultParameters(new BBGPIntegratedRelevanceModel()))));
+		// BBGP_STORING
+		agents.add(buildBBGPAgent(buildBeliefBase(buildStoringRetrievingParameters(0.2F, 0.2F))));
+		agents.add(buildBBGPAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.6F, 0.6F, new BBGPIntegratedRelevanceModel()))));
+		// BBGP_FORGETTING
+		agents.add(buildBBGPAgent(buildBeliefBase(buildForgettingParameters(0.4F, 0.2F, 0.6F))));
+		agents.add(buildBBGPAgent(
+				buildBeliefBase(buildForgettingParameters(0.2F, 0.2F, 0.8F, new BBGPIntegratedRelevanceModel()))));
+
+		agents.forEach(a -> a.setDescriptor(0F, 0F, 0F));
+		
+		agents.forEach(a -> a.getPlanLibrary().addGoal(goals));
+		return agents;
+	}
+
+	
+	public static Set<Agent> buildOpt100x500(Set<Goal> goals) {
+		Set<Agent> agents = new HashSet<>();
+
+		// SOAR-DEFAULT
+		agents.add(buildSOARAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildSOARAgent(buildBeliefBase(buildDefaultParameters(new SOARIntegratedRelevanceModel()))));
+		// SOAR-STORING_RETRIEVING
+		agents.add(buildSOARAgent(buildBeliefBase(buildStoringRetrievingParameters(0.2F, 0.2F))));
+		agents.add(buildSOARAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.2F, 0.2F, new SOARIntegratedRelevanceModel()))));
+		// SOAR-FORGETTING
+		agents.add(buildSOARAgent(buildBeliefBase(buildForgettingParameters(0.4F, 0.8F, 0.4F))));
+		agents.add(buildSOARAgent(
+				buildBeliefBase(buildForgettingParameters(0.4F, 0.6F, 0.6F, new SOARIntegratedRelevanceModel()))));
+
+		// BDI_DEFAULT
+		agents.add(buildBDIAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildBDIAgent(buildBeliefBase(buildDefaultParameters(new BDIIntegratedRelevanceModel()))));
+		// BDI_STORING
+		agents.add(buildBDIAgent(buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.6F))));
+		agents.add(buildBDIAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.4F, new BDIIntegratedRelevanceModel()))));
+		// BDI_FORGETTING
+		agents.add(buildBDIAgent(buildBeliefBase(buildForgettingParameters(0.4F, 0.6F, 0.2F))));
+		agents.add(buildBDIAgent(
+				buildBeliefBase(buildForgettingParameters(0.4F, 0.8F, 0.6F, new BDIIntegratedRelevanceModel()))));
+
+		// BBGP_DEFAULT
+		agents.add(buildBBGPAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildBBGPAgent(buildBeliefBase(buildDefaultParameters(new BBGPIntegratedRelevanceModel()))));
+		// BBGP_STORING
+		agents.add(buildBBGPAgent(buildBeliefBase(buildStoringRetrievingParameters(0.2F, 0.2F))));
+		agents.add(buildBBGPAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.2F, 0.6F, new BBGPIntegratedRelevanceModel()))));
+		// BBGP_FORGETTING
+		agents.add(buildBBGPAgent(buildBeliefBase(buildForgettingParameters(0.2F, 0.6F, 0.6F))));
+		agents.add(buildBBGPAgent(
+				buildBeliefBase(buildForgettingParameters(0.4F, 0.6F, 0.8F, new BBGPIntegratedRelevanceModel()))));
+
+		agents.forEach(a -> a.setDescriptor(0F, 0F, 0F));
+		
+		agents.forEach(a -> a.getPlanLibrary().addGoal(goals));
+		return agents;
+	}
+	
+	public static Set<Agent> buildOptDYnamics1(Set<Goal> goals) {
+		Set<Agent> agents = new HashSet<>();
+
+		// SOAR-DEFAULT
+		agents.add(buildSOARAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildSOARAgent(buildBeliefBase(buildDefaultParameters(new SOARIntegratedRelevanceModel()))));
+		// SOAR-STORING_RETRIEVING
+		agents.add(buildSOARAgent(buildBeliefBase(buildStoringRetrievingParameters(0.2F, 0.2F))));
+		agents.add(buildSOARAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.4F, new SOARIntegratedRelevanceModel()))));
+		// SOAR-FORGETTING
+		agents.add(buildSOARAgent(buildBeliefBase(buildForgettingParameters(0.6F, 0.8F, 0.2F))));
+		agents.add(buildSOARAgent(
+				buildBeliefBase(buildForgettingParameters(0.2F, 0.4F, 0.8F, new SOARIntegratedRelevanceModel()))));
+
+		// BDI_DEFAULT
+		agents.add(buildBDIAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildBDIAgent(buildBeliefBase(buildDefaultParameters(new BDIIntegratedRelevanceModel()))));
+		// BDI_STORING
+		agents.add(buildBDIAgent(buildBeliefBase(buildStoringRetrievingParameters(0.8F, 0.8F))));
+		agents.add(buildBDIAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.2F, 0.2F, new BDIIntegratedRelevanceModel()))));
+		// BDI_FORGETTING
+		agents.add(buildBDIAgent(buildBeliefBase(buildForgettingParameters(0.4F, 0.6F, 0.2F))));
+		agents.add(buildBDIAgent(
+				buildBeliefBase(buildForgettingParameters(0.6F, 0.6F, 0.8F, new BDIIntegratedRelevanceModel()))));
+
+		// BBGP_DEFAULT
+		agents.add(buildBBGPAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildBBGPAgent(buildBeliefBase(buildDefaultParameters(new BBGPIntegratedRelevanceModel()))));
+		// BBGP_STORING
+		agents.add(buildBBGPAgent(buildBeliefBase(buildStoringRetrievingParameters(0.2F, 0.2F))));
+		agents.add(buildBBGPAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.2F, 0.4F, new BBGPIntegratedRelevanceModel()))));
+		// BBGP_FORGETTING
+		agents.add(buildBBGPAgent(buildBeliefBase(buildForgettingParameters(0.2F, 0.6F, 0.2F))));
+		agents.add(buildBBGPAgent(
+				buildBeliefBase(buildForgettingParameters(0.6F, 0.6F, 0.6F, new BBGPIntegratedRelevanceModel()))));
+
+		agents.forEach(a -> a.setDescriptor(0F, 0F, 0F));
+		
+		agents.forEach(a -> a.getPlanLibrary().addGoal(goals));
+		return agents;
+	}
+	
+	public static Set<Agent> buildOpt(Set<Goal> goals) {
+		Set<Agent> agents = new HashSet<>();
+
+		// SOAR-DEFAULT
+		agents.add(buildSOARAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildSOARAgent(buildBeliefBase(buildDefaultParameters(new SOARIntegratedRelevanceModel()))));
+		// SOAR-STORING_RETRIEVING
+		agents.add(buildSOARAgent(buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.4F))));
+		agents.add(buildSOARAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.4F, new SOARIntegratedRelevanceModel()))));
+		// SOAR-FORGETTING
+		agents.add(buildSOARAgent(buildBeliefBase(buildForgettingParameters(0.2F, 0.2F, 0.6F))));
+		agents.add(buildSOARAgent(
+				buildBeliefBase(buildForgettingParameters(0.6F, 0.8F, 0.2F, new SOARIntegratedRelevanceModel()))));
+
+		// BDI_DEFAULT
+		agents.add(buildBDIAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildBDIAgent(buildBeliefBase(buildDefaultParameters(new BDIIntegratedRelevanceModel()))));
+		// BDI_STORING
+		agents.add(buildBDIAgent(buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.8F))));
+		agents.add(buildBDIAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.6F, 0.6F, new BDIIntegratedRelevanceModel()))));
+		// BDI_FORGETTING
+		agents.add(buildBDIAgent(buildBeliefBase(buildForgettingParameters(0.8F, 0.8F, 0.2F))));
+		agents.add(buildBDIAgent(
+				buildBeliefBase(buildForgettingParameters(0.2F, 0.4F, 0.8F, new BDIIntegratedRelevanceModel()))));
+
+		// BBGP_DEFAULT
+		agents.add(buildBBGPAgent(buildBeliefBase(buildDefaultParameters())));
+		agents.add(buildBBGPAgent(buildBeliefBase(buildDefaultParameters(new BBGPIntegratedRelevanceModel()))));
+		// BBGP_STORING
+		agents.add(buildBBGPAgent(buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.4F))));
+		agents.add(buildBBGPAgent(
+				buildBeliefBase(buildStoringRetrievingParameters(0.4F, 0.6F, new BBGPIntegratedRelevanceModel()))));
+		// BBGP_FORGETTING
+		agents.add(buildBBGPAgent(buildBeliefBase(buildForgettingParameters(0.2F, 0.4F, 0.6F))));
+		agents.add(buildBBGPAgent(
+				buildBeliefBase(buildForgettingParameters(0.6F, 0.2F, 0.2F, new BBGPIntegratedRelevanceModel()))));
+
+		agents.forEach(a -> a.setDescriptor(0F, 0F, 0F));
+		
+		agents.forEach(a -> a.getPlanLibrary().addGoal(goals));
+		return agents;
+	}
 }
